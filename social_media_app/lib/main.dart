@@ -1,47 +1,59 @@
+import 'package:social_media_app/pages/auth.dart';
+import 'package:social_media_app/pages/home.dart';
 import 'package:flutter/material.dart';
+import 'package:overlay_support/overlay_support.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Social Media App',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.deepPurple,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(),
+      home: StartPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-
+class StartPage extends StatefulWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _StartPageState createState() => _StartPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _StartPageState extends State<StartPage> {
 
+  SharedPreferences data;
+  bool _isLoggedIn = false;
+
+  Future checkIfLogin() async {
+    data = await SharedPreferences.getInstance();
+    bool _val = data.getBool("login");
+    if(_val == true){
+      setState(() {
+        _isLoggedIn = !_isLoggedIn;
+      });
+    }
+  }
+
+  void initState(){
+    checkIfLogin();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Title"),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-
-          ],
-        ),
-      ),
+    return OverlaySupport(
+      child: MaterialApp(
+        home: _isLoggedIn ? HomePage() : Auth(),
+        color: Color.fromRGBO(75, 0, 130, 1),
+      )
     );
   }
 }
