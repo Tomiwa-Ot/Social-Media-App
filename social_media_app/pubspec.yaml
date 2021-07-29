@@ -31,6 +31,11 @@ dependencies:
   http: any
   shared_preferences: any
   overlay_support: ^1.0.5
+  firebase_core: ^0.5.0
+  firebase_messaging: any
+  firebase_auth: any
+  firebase_storage: any
+  cloud_firestore: ^0.14.0+2
   qr_flutter: ^3.2.0
 
 dev_dependencies:

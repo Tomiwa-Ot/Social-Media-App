@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "996723048251",
+    "project_id": "social-media-app-a1ec0",
+    "storage_bucket": "social-media-app-a1ec0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:996723048251:android:6a26636be454f3ab51011e",
+        "android_client_info": {
+          "package_name": "com.btc.social_media_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "996723048251-56fb3osk0i7sc443iaua0bmqcufbscve.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvd8Q6HJIhgO9N6Ij5qhYhElweswkN7Dk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "996723048251-56fb3osk0i7sc443iaua0bmqcufbscve.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

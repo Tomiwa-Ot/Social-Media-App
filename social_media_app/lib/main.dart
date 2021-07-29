@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:social_media_app/pages/auth.dart';
 import 'package:social_media_app/pages/home.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +33,11 @@ class _StartPageState extends State<StartPage> {
   SharedPreferences data;
   bool _isLoggedIn = false;
 
+  Future<FirebaseApp> initializeFirebase() async{
+    FirebaseApp firebaseApp = await Firebase.initializeApp();
+    return firebaseApp;
+  }
+
   Future checkIfLogin() async {
     data = await SharedPreferences.getInstance();
     bool _val = data.getBool("login");
@@ -43,6 +49,7 @@ class _StartPageState extends State<StartPage> {
   }
 
   void initState(){
+    initializeFirebase();
     checkIfLogin();
     super.initState();
   }
