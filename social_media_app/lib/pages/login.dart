@@ -50,9 +50,8 @@ class _LoginState extends State<Login> {
       DocumentSnapshot snapshot = (FirebaseFirestore.instance.collection("users").doc(userCredential.user.uid.toString())) as DocumentSnapshot;
       String firstname = snapshot.get("Firstname"), lastname = snapshot.get("Lastname"), email = snapshot.get("Email");
       loginPersistence(firstname, lastname, email);
-      Navigator.push(context, MaterialPageRoute(
-          builder: (context) => HomePage(),
-        ));
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+        HomePage()), (route) => false);
     }else{
       showDialog(
         context: context,

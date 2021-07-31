@@ -69,9 +69,8 @@ class _RegisterState extends State<Register> {
       });
       UserCredential user = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
       if(user != null){
-        Navigator.push(context, MaterialPageRoute(
-          builder: (context) => HomePage(),
-        ));
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+          HomePage()), (route) => false);
       }else{
         showDialog(
           context: context,
