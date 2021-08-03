@@ -14,6 +14,7 @@ class _RegisterState extends State<Register> {
 
   final _formKey = GlobalKey<FormState>();
   String firstname, lastname, email, password;
+  bool _loading = false;
 
   bool _checkBoxValue = false;
   void checkBoxState(){
@@ -60,6 +61,9 @@ class _RegisterState extends State<Register> {
   }
 
   Future registerUser(String firstname, String lastname, String email, String password) async {
+    setState(() {
+      _loading = true;
+    });
     UserCredential createdUser = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
     if(createdUser.user != null){
       FirebaseFirestore.instance.collection("users").doc(createdUser.user.uid).set({
@@ -72,6 +76,9 @@ class _RegisterState extends State<Register> {
         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
           HomePage()), (route) => false);
       }else{
+        setState(() {
+          _loading = false;
+        });
         showDialog(
           context: context,
           builder: (_) => new AlertDialog(
@@ -89,6 +96,9 @@ class _RegisterState extends State<Register> {
         );
       }
     }else{
+      setState(() {
+        _loading = false;
+      });
       showDialog(
         context: context,
         builder: (_) => new AlertDialog(
@@ -254,7 +264,11 @@ class _RegisterState extends State<Register> {
                           borderRadius: new BorderRadius.circular(30.0),
                         ),
                         color: Color.fromRGBO(75, 0, 130, 1),
-                        child: Text("Sign Up",
+                        child: _loading ? Center(
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(Color.fromRGBO(255,40,147, 1),),
+                          ),
+                        ) : Text("Sign Up",
                           style: TextStyle(
                             color: Colors.white,
                             fontFamily: 'Spartan',

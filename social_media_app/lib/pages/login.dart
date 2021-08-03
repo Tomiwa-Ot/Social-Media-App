@@ -14,6 +14,7 @@ class _LoginState extends State<Login> {
 
   final _formKey = GlobalKey<FormState>();
   String email, password;
+  bool _loading = false;
 
   String pwdValidator(String value) {
     if (value.isEmpty) {
@@ -45,6 +46,9 @@ class _LoginState extends State<Login> {
   }
 
   Future login(String email, String password) async { 
+    setState(() {
+      _loading = true;
+    });
     UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
     if(userCredential != null){
       DocumentSnapshot snapshot = (FirebaseFirestore.instance.collection("users").doc(userCredential.user.uid.toString())) as DocumentSnapshot;
@@ -53,6 +57,9 @@ class _LoginState extends State<Login> {
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
         HomePage()), (route) => false);
     }else{
+      setState(() {
+        _loading = false;
+      });
       showDialog(
         context: context,
         builder: (_) => new AlertDialog(
@@ -183,7 +190,11 @@ class _LoginState extends State<Login> {
                         //side: BorderSide(color: Color.fromRGBO(237,47,89, 1)),
                       ),
                       color: Color.fromRGBO(75, 0, 130, 1),
-                      child: Text("Sign In",
+                      child: _loading ? Center(
+                        child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(Color.fromRGBO(255,40,147, 1)),
+                          )
+                        ) : Text("Sign In",
                         style: TextStyle(
                           color: Colors.white,
                           fontFamily: 'Spartan',
