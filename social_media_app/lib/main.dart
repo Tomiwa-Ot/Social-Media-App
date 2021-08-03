@@ -58,7 +58,7 @@ class _StartPageState extends State<StartPage> {
   Widget build(BuildContext context) {
     return OverlaySupport(
       child: MaterialApp(
-        home: _isLoggedIn ? HomePage() : Auth(),
+        home: _isLoggedIn ? Auth() : HomePage(),
         color: Color.fromRGBO(75, 0, 130, 1),
       )
     );

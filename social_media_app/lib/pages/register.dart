@@ -15,6 +15,7 @@ class _RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
   String firstname, lastname, email, password;
   bool _loading = false;
+  bool _obscureText = true;
 
   bool _checkBoxValue = false;
   void checkBoxState(){
@@ -212,10 +213,23 @@ class _RegisterState extends State<Register> {
                             validator: pwdValidator,
                             onChanged: (value) => password = value,
                             keyboardType: TextInputType.visiblePassword,
-                            obscureText: true,
+                            obscureText: _obscureText,
                             cursorColor: Color.fromRGBO(255,40,147, 1),
                             decoration: new InputDecoration(
                               labelText: "Password",
+                              suffixIcon: IconButton(
+                                icon : Icon(
+                                  _obscureText
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: _obscureText ? Colors.grey : Color.fromRGBO(255,40,147, 1),
+                                ),
+                                onPressed: (){
+                                  setState(() {
+                                    _obscureText = !_obscureText;
+                                  });
+                                },
+                              ),
                               prefixIcon: Icon(
                                 Icons.lock_outline,
                                 color: Color.fromRGBO(255,40,147, 1),

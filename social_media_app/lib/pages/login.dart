@@ -15,6 +15,7 @@ class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
   String email, password;
   bool _loading = false;
+  bool _obscureText = false;
 
   String pwdValidator(String value) {
     if (value.isEmpty) {
@@ -147,6 +148,19 @@ class _LoginState extends State<Login> {
                           cursorColor: Color.fromRGBO(255,40,147, 1),
                           decoration: new InputDecoration(
                             labelText: "Password",
+                            suffixIcon: IconButton(
+                              icon : Icon(
+                                _obscureText
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: _obscureText ? Colors.grey : Color.fromRGBO(255,40,147, 1),
+                              ),
+                              onPressed: (){
+                                setState(() {
+                                  _obscureText = !_obscureText;
+                                });
+                              },
+                            ),
                             prefixIcon: Icon(
                               Icons.lock_outline,
                               color: Color.fromRGBO(255,40,147, 1),

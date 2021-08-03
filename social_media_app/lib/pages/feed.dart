@@ -12,6 +12,7 @@ class _FeedState extends State<Feed> {
     return Scaffold(
       backgroundColor: Color.fromRGBO(250, 250, 250, 1),
       appBar: AppBar(
+        elevation: 0.0,
         backgroundColor: Colors.white,
       ),
     );
