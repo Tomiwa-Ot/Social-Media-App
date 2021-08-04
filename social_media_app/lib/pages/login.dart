@@ -52,8 +52,11 @@ class _LoginState extends State<Login> {
     });
     UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
     if(userCredential != null){
-      DocumentSnapshot snapshot = (FirebaseFirestore.instance.collection("users").doc(userCredential.user.uid.toString())) as DocumentSnapshot;
-      String firstname = snapshot.get("Firstname"), lastname = snapshot.get("Lastname"), email = snapshot.get("Email");
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection("users").get();
+      String firstname = querySnapshot.docs.toList()[0].toString(), lastname = querySnapshot.docs.toList()[1].toString();
+      print("$firstname $lastname");
+      // DocumentSnapshot snapshot = (FirebaseFirestore.instance.collection("users").doc(userCredential.user.uid.toString())) as DocumentSnapshot;
+      // String firstname = snapshot.get("Firstname"), lastname = snapshot.get("Lastname"), email = snapshot.get("Email");
       loginPersistence(firstname, lastname, email);
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
         HomePage()), (route) => false);
@@ -152,7 +155,7 @@ class _LoginState extends State<Login> {
                           validator: pwdValidator,
                           onChanged: (value) => password = value,
                           keyboardType: TextInputType.visiblePassword,
-                          obscureText: true,
+                          obscureText: _obscureText,
                           cursorColor: Color.fromRGBO(255,40,147, 1),
                           decoration: new InputDecoration(
                             focusedErrorBorder: OutlineInputBorder(

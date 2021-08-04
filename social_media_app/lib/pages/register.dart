@@ -70,7 +70,10 @@ class _RegisterState extends State<Register> {
       FirebaseFirestore.instance.collection("users").doc(createdUser.user.uid).set({
         "Firstname" : firstname,
         "Lastname" : lastname,
-        "Email" : email
+        "Email" : email,
+        "Bio" : "",
+        "Following" : [],
+        "Followers" : []
       });
       UserCredential user = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
       if(user != null){

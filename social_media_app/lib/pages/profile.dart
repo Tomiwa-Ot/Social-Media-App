@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:social_media_app/pages/auth.dart';
@@ -12,7 +13,7 @@ class _ProfileState extends State<Profile> {
   String firstname, lastname, email;
 
   void initState(){
-    getUserData();
+    //getUserData();
     super.initState();
   }
 
@@ -30,7 +31,6 @@ class _ProfileState extends State<Profile> {
     userData.remove("lastname");
     userData.remove("email");
   }
-//FETCH NAME FROM SHARED PREF
 
 
   @override
@@ -45,8 +45,9 @@ class _ProfileState extends State<Profile> {
         actions: [
           IconButton(
             icon: Icon(Icons.logout, color: Color.fromRGBO(75, 0, 130, 1)),
-            onPressed: (){
+            onPressed: () async {
               removeUserData();
+              await FirebaseAuth.instance.signOut();
               Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
                 Auth()), (route) => false);
             },
@@ -63,8 +64,8 @@ class _ProfileState extends State<Profile> {
                   backgroundColor: Color.fromRGBO(255,40,147, 1),
                   radius: 40.0,
                 ),
-                title: Text("$lastname $firstname"),
-                subtitle: Text(email),
+                title: Text("lastname firstname"),
+                subtitle: Text("email@email.com"),
                 trailing: IconButton(
                   icon: Icon(Icons.edit, color: Color.fromRGBO(75, 0, 130, 1)),
                   onPressed: (){
