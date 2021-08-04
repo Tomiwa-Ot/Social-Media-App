@@ -11,11 +11,13 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   int _selectedIndex = 0;
+  PageController _pageController = PageController();
 
   void _onItemTapped(int index){
     setState(() {
       _selectedIndex = index;
     });
+    _pageController.jumpToPage(index);
   }
 
   final List<Widget> navWidgets = [
@@ -27,7 +29,15 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: navWidgets[_selectedIndex],
+      body: PageView(
+        controller: _pageController,
+        children: navWidgets,
+        onPageChanged: (value) {
+          setState(() {
+            _selectedIndex = value;
+          });
+        },
+      ),
       backgroundColor: Colors.white,
       bottomNavigationBar: BottomNavigationBar(
       items: const <BottomNavigationBarItem>[

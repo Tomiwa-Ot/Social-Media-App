@@ -11,6 +11,8 @@ class Auth extends StatefulWidget {
 class _AuthState extends State<Auth> {
 
   int _selectedIndex = 0;
+  PageController _pageController = PageController();
+
   final List<Widget> navWidgets = [
     Login(),
     Register()
@@ -21,13 +23,22 @@ class _AuthState extends State<Auth> {
     setState(() {
       _selectedIndex = index;
     });
+    _pageController.jumpToPage(index);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromRGBO(240, 240, 240, 1),
-      body: navWidgets[_selectedIndex],
+      body: PageView(
+        controller: _pageController,
+        children: navWidgets,
+        onPageChanged: (value) {
+          setState(() {
+            _selectedIndex = value;
+          });
+        },
+      ),
       bottomNavigationBar: BottomNavigationBar(
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(

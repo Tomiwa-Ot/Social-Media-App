@@ -12,6 +12,10 @@ class _SearchState extends State<Search> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromRGBO(250, 250, 250, 1),
+      appBar: AppBar(
+        backgroundColor: Colors.white
+        
+      ),
     );
   }
 }

@@ -15,7 +15,7 @@ class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
   String email, password;
   bool _loading = false;
-  bool _obscureText = false;
+  bool _obscureText = true;
 
   String pwdValidator(String value) {
     if (value.isEmpty) {
@@ -126,6 +126,14 @@ class _LoginState extends State<Login> {
                             labelStyle: TextStyle(
                               color: Colors.grey
                             ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.red),
+                              borderRadius: new BorderRadius.circular(35.0),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.red),
+                              borderRadius: new BorderRadius.circular(35.0),
+                            ),
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Color.fromRGBO(75, 0, 130, 1)),
                               borderRadius: new BorderRadius.circular(35.0),
@@ -147,6 +155,14 @@ class _LoginState extends State<Login> {
                           obscureText: true,
                           cursorColor: Color.fromRGBO(255,40,147, 1),
                           decoration: new InputDecoration(
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.red),
+                              borderRadius: new BorderRadius.circular(35.0),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.red),
+                              borderRadius: new BorderRadius.circular(35.0),
+                            ),
                             labelText: "Password",
                             suffixIcon: IconButton(
                               icon : Icon(

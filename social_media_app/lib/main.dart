@@ -6,22 +6,9 @@ import 'package:overlay_support/overlay_support.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(StartPage());
 }
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Social Media App',
-      theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: StartPage(),
-    );
-  }
-}
 
 class StartPage extends StatefulWidget {
   @override
@@ -58,6 +45,11 @@ class _StartPageState extends State<StartPage> {
   Widget build(BuildContext context) {
     return OverlaySupport(
       child: MaterialApp(
+        title: 'Social Media App',
+        theme: ThemeData(
+          primarySwatch: Colors.deepPurple,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
         home: _isLoggedIn ? Auth() : HomePage(),
         color: Color.fromRGBO(75, 0, 130, 1),
       )
