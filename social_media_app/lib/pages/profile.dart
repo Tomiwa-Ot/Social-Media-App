@@ -9,6 +9,20 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
 
+  String firstname, lastname, email;
+
+  void initState(){
+    getUserData();
+    super.initState();
+  }
+
+  void getUserData() async {
+    SharedPreferences userData = await SharedPreferences.getInstance();
+    firstname = userData.getString("firstname");
+    lastname = userData.getString("lastname");
+    email = userData.getString("email");
+  }
+
   Future removeUserData() async {
     SharedPreferences userData = await SharedPreferences.getInstance();
     userData.setBool("login", false);
@@ -49,8 +63,8 @@ class _ProfileState extends State<Profile> {
                   backgroundColor: Color.fromRGBO(255,40,147, 1),
                   radius: 40.0,
                 ),
-                title: Text("Firstname Lastname"),
-                subtitle: Text("email@email.com"),
+                title: Text("$lastname $firstname"),
+                subtitle: Text(email),
                 trailing: IconButton(
                   icon: Icon(Icons.edit, color: Color.fromRGBO(75, 0, 130, 1)),
                   onPressed: (){
@@ -76,7 +90,6 @@ class _ProfileState extends State<Profile> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20.0,
-                          color: Color.fromRGBO(75, 0, 130, 1)
                         ),
                       ),
                       Text("FOLLOWING")
@@ -91,7 +104,6 @@ class _ProfileState extends State<Profile> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20.0,
-                          color: Color.fromRGBO(75, 0, 130, 1)
                         ),
                       ),
                       Text("FOLLOWERS")

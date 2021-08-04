@@ -15,6 +15,13 @@ class _FeedState extends State<Feed> {
         elevation: 0.0,
         backgroundColor: Colors.white,
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Color.fromRGBO(75, 0, 130, 1),
+        child: Icon(Icons.add, color: Color.fromRGBO(255,40,147, 1)),
+        onPressed: (){
+
+        },
+      ),
     );
   }
 }
