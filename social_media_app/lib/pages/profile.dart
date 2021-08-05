@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:social_media_app/pages/auth.dart';
+import 'package:social_media_app/pages/streamusers.dart';
 
 class Profile extends StatefulWidget {
   @override
@@ -85,31 +86,45 @@ class _ProfileState extends State<Profile> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Column(
-                    children: [
-                      Text("0",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20.0,
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) => StreamUsers(title: "Following", uid: "user id",)
+                      ));
+                    },
+                    child: Column(
+                      children: [
+                        Text("0",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20.0,
+                          ),
                         ),
-                      ),
-                      Text("FOLLOWING")
-                    ],
+                        Text("FOLLOWING")
+                      ],
+                    ),
                   ),
                   VerticalDivider(
                     
                   ),
-                  Column(
-                    children: [
-                      Text("0",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20.0,
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) => StreamUsers(title: "Followers", uid: "user id",)
+                      ));
+                    },
+                    child: Column(
+                      children: [
+                        Text("0",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20.0,
+                          ),
                         ),
-                      ),
-                      Text("FOLLOWERS")
-                    ],
-                  ),
+                        Text("FOLLOWERS")
+                      ],
+                    ),
+                  )
                 ],
               )
             ],

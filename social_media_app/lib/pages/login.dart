@@ -85,7 +85,7 @@ class _LoginState extends State<Login> {
           break;
         default:
           showSimpleNotification(
-            Text("Oops"),
+            Text("Login Failed"),
             background: Color.fromRGBO(237, 47, 89, 1),
             duration: Duration(seconds: 3),
             subtitle: Text("Somehting went wrong")
