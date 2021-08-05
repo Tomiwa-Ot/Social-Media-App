@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:social_media_app/pages/home.dart';
 
@@ -13,7 +14,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
 
   final _formKey = GlobalKey<FormState>();
-  String email, password;
+  String firstname, lastname, email, password;
   bool _loading = false;
   bool _obscureText = true;
 
@@ -38,8 +39,9 @@ class _LoginState extends State<Login> {
       return null;
   }
 
-  Future loginPersistence(String firstname, String lastname, String email) async {
+  Future loginPersistence(String uid, String firstname, String lastname, String email) async {
     SharedPreferences userData = await SharedPreferences.getInstance();
+    userData.setString("uid", uid);
     userData.setBool("login", true);
     userData.setString("firstname", firstname);
     userData.setString("lastname", lastname);
@@ -50,35 +52,45 @@ class _LoginState extends State<Login> {
     setState(() {
       _loading = true;
     });
-    UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-    if(userCredential != null){
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection("users").get();
-      String firstname = querySnapshot.docs.toList()[0].toString(), lastname = querySnapshot.docs.toList()[1].toString();
-      print("$firstname $lastname");
-      // DocumentSnapshot snapshot = (FirebaseFirestore.instance.collection("users").doc(userCredential.user.uid.toString())) as DocumentSnapshot;
-      // String firstname = snapshot.get("Firstname"), lastname = snapshot.get("Lastname"), email = snapshot.get("Email");
-      loginPersistence(firstname, lastname, email);
+    try{
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+      FirebaseFirestore.instance.collection("users")
+      .doc(userCredential.user.uid).get().then((DocumentSnapshot documentSnapshot){
+        firstname = documentSnapshot.get("Firstname");
+        lastname = documentSnapshot.get("Lastname");
+      });
+      loginPersistence(userCredential.user.uid, firstname, lastname, email);
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
         HomePage()), (route) => false);
-    }else{
+    }catch(e){
       setState(() {
         _loading = false;
       });
-      showDialog(
-        context: context,
-        builder: (_) => new AlertDialog(
-          title: new Text("Oops"),
-          content: new Text("Login Failed"),
-          actions: <Widget>[
-            FlatButton(
-              child: Text('Close'),
-              onPressed: () {
-                Navigator.of(context, rootNavigator:true).pop();
-              },
-            )
-          ],
-        )
-      );
+      switch(e.message){
+        case "There is no user record corresponding to this identifier. The user may have been deleted.":
+          showSimpleNotification(
+            Text("Login Failed"),
+            background: Color.fromRGBO(237, 47, 89, 1),
+            duration: Duration(seconds: 3),
+            subtitle: Text("Incorrect Username/Password")
+          );
+          break;
+        case "The password is invalid or the user does not have a password.":
+          showSimpleNotification(
+            Text("Login Failed"),
+            background: Color.fromRGBO(237, 47, 89, 1),
+            duration: Duration(seconds: 3),
+            subtitle: Text("Incorrect Username/Password")
+          );
+          break;
+        default:
+          showSimpleNotification(
+            Text("Oops"),
+            background: Color.fromRGBO(237, 47, 89, 1),
+            duration: Duration(seconds: 3),
+            subtitle: Text("Somehting went wrong")
+          );
+      }
     }
   }
 

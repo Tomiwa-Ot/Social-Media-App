@@ -53,9 +53,10 @@ class _RegisterState extends State<Register> {
       return null;
   }
 
-  Future loginPersistence(String firstname, String lastname, String email) async {
+  Future loginPersistence(String uid, String firstname, String lastname, String email) async {
     SharedPreferences userData = await SharedPreferences.getInstance();
     userData.setBool("login", true);
+    userData.setString("uid", uid);
     userData.setString("firstname", firstname);
     userData.setString("lastname", lastname);
     userData.setString("email", email);
@@ -65,8 +66,8 @@ class _RegisterState extends State<Register> {
     setState(() {
       _loading = true;
     });
-    UserCredential createdUser = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
-    if(createdUser.user != null){
+    try{
+      UserCredential createdUser = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
       FirebaseFirestore.instance.collection("users").doc(createdUser.user.uid).set({
         "Firstname" : firstname,
         "Lastname" : lastname,
@@ -75,50 +76,17 @@ class _RegisterState extends State<Register> {
         "Following" : [],
         "Followers" : []
       });
-      UserCredential user = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-      if(user != null){
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+      FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+      loginPersistence(createdUser.user.uid, firstname, lastname, email);
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
           HomePage()), (route) => false);
-      }else{
-        setState(() {
-          _loading = false;
-        });
-        showDialog(
-          context: context,
-          builder: (_) => new AlertDialog(
-            title: new Text("Oops"),
-            content: new Text("Registration Failed"),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Close'),
-                onPressed: () {
-                  Navigator.of(context, rootNavigator:true).pop();
-                },
-              )
-            ],
-          )
-        );
-      }
-    }else{
+    }catch(e){
       setState(() {
         _loading = false;
       });
-      showDialog(
-        context: context,
-        builder: (_) => new AlertDialog(
-          title: new Text("Oops"),
-          content: new Text("Something went wrong"),
-          actions: <Widget>[
-            FlatButton(
-              child: Text('Close'),
-              onPressed: () {
-                Navigator.of(context, rootNavigator:true).pop();
-              },
-            )
-          ],
-        )
-      );
+      print(e.message);
     }
+    
   }
 
   @override

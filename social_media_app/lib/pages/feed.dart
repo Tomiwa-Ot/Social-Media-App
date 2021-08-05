@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:social_media_app/pages/post.dart';
 
 class Feed extends StatefulWidget {
 
@@ -19,7 +20,9 @@ class _FeedState extends State<Feed> {
         backgroundColor: Color.fromRGBO(75, 0, 130, 1),
         child: Icon(Icons.add, color: Color.fromRGBO(255,40,147, 1)),
         onPressed: (){
-
+          Navigator.push(context, MaterialPageRoute(
+            builder: (context) => Post()
+          ));
         },
       ),
     );
