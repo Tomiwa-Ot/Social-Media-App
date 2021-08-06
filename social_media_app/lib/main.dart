@@ -19,6 +19,7 @@ class _StartPageState extends State<StartPage> {
 
   SharedPreferences data;
   bool _isLoggedIn = false;
+  String uid;
 
   Future<FirebaseApp> initializeFirebase() async{
     FirebaseApp firebaseApp = await Firebase.initializeApp();
@@ -30,6 +31,7 @@ class _StartPageState extends State<StartPage> {
     bool _val = data.getBool("login");
     if(_val == true){
       setState(() {
+        uid = data.getString("uid");
         _isLoggedIn = !_isLoggedIn;
       });
     }

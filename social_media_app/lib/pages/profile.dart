@@ -1,7 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:social_media_app/pages/auth.dart';
 import 'package:social_media_app/pages/streamusers.dart';
 
 class Profile extends StatefulWidget {
@@ -25,13 +23,6 @@ class _ProfileState extends State<Profile> {
     email = userData.getString("email");
   }
 
-  Future removeUserData() async {
-    SharedPreferences userData = await SharedPreferences.getInstance();
-    userData.setBool("login", false);
-    userData.remove("firstname");
-    userData.remove("lastname");
-    userData.remove("email");
-  }
 
 
   @override
@@ -43,17 +34,6 @@ class _ProfileState extends State<Profile> {
         iconTheme: IconThemeData(
           color: Color.fromRGBO(75, 0, 130, 1),
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout, color: Color.fromRGBO(75, 0, 130, 1)),
-            onPressed: () async {
-              removeUserData();
-              await FirebaseAuth.instance.signOut();
-              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-                Auth()), (route) => false);
-            },
-          )
-        ],
       ),
       backgroundColor: Color.fromRGBO(240, 240, 240, 1),
       body: Container(
@@ -62,7 +42,7 @@ class _ProfileState extends State<Profile> {
             children: [
               ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: Color.fromRGBO(255,40,147, 1),
+                  backgroundColor: Color.fromRGBO(75, 0, 130, 1),
                   radius: 40.0,
                 ),
                 title: Text("lastname firstname"),

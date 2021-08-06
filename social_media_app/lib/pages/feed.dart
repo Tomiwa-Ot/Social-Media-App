@@ -12,10 +12,6 @@ class _FeedState extends State<Feed> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromRGBO(250, 250, 250, 1),
-      appBar: AppBar(
-        elevation: 0.0,
-        backgroundColor: Colors.white,
-      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Color.fromRGBO(75, 0, 130, 1),
         child: Icon(Icons.add, color: Color.fromRGBO(255,40,147, 1)),

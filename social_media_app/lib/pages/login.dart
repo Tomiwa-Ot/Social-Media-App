@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:overlay_support/overlay_support.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:social_media_app/pages/home.dart';
 
@@ -68,30 +67,29 @@ class _LoginState extends State<Login> {
       });
       switch(e.message){
         case "There is no user record corresponding to this identifier. The user may have been deleted.":
-          showSimpleNotification(
-            Text("Login Failed"),
-            background: Color.fromRGBO(237, 47, 89, 1),
-            duration: Duration(seconds: 3),
-            subtitle: Text("Incorrect Username/Password")
-          );
+          showSnackBar("Incorrect Username/Password");
           break;
         case "The password is invalid or the user does not have a password.":
-          showSimpleNotification(
-            Text("Login Failed"),
-            background: Color.fromRGBO(237, 47, 89, 1),
-            duration: Duration(seconds: 3),
-            subtitle: Text("Incorrect Username/Password")
-          );
+          showSnackBar("Incorrect Username/Password");
           break;
         default:
-          showSimpleNotification(
-            Text("Login Failed"),
-            background: Color.fromRGBO(237, 47, 89, 1),
-            duration: Duration(seconds: 3),
-            subtitle: Text("Somehting went wrong")
-          );
+          showSnackBar("Something went wrong");
       }
     }
+  }
+
+  void showSnackBar(String value){
+    Scaffold.of(context).showSnackBar(new SnackBar(
+      backgroundColor: Color.fromRGBO(255,40,147, 1),
+      duration: Duration(seconds: 4),
+      elevation: 5.0,
+      content: Text(value,
+      textAlign: TextAlign.left,
+        style: TextStyle(
+          color: Colors.white
+        ),
+      ),
+    ));
   }
 
   @override

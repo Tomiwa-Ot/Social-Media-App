@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:overlay_support/overlay_support.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:social_media_app/pages/home.dart';
 
@@ -88,23 +87,27 @@ class _RegisterState extends State<Register> {
       print(e.message);
       switch(e){
         case "The email address is already in use by another account.":
-          showSimpleNotification(
-            Text("Registration Failed"),
-            background: Color.fromRGBO(237, 47, 89, 1),
-            duration: Duration(seconds: 3),
-            subtitle: Text("Email is registered to another account")
-          );
+          showSnackBar("Email is registered to another account");
           break;
         default:
-          showSimpleNotification(
-            Text("Registration Failed"),
-            background: Color.fromRGBO(237, 47, 89, 1),
-            duration: Duration(seconds: 3),
-            subtitle: Text("Somehting went wrong")
-          );
+          showSnackBar("Something went wrong");
       }
     }
     
+  }
+
+  void showSnackBar(String value){
+    Scaffold.of(context).showSnackBar(new SnackBar(
+      backgroundColor: Color.fromRGBO(255,40,147, 1),
+      duration: Duration(seconds: 4),
+      elevation: 5.0,
+      content: Text(value,
+      textAlign: TextAlign.left,
+        style: TextStyle(
+          color: Colors.white
+        ),
+      ),
+    ));
   }
 
   @override
