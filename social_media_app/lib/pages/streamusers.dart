@@ -10,7 +10,7 @@ class StreamUsers extends StatefulWidget {
   final String uid;
 }
 
-// Scan Firestore & Zefyr
+// Scan 
 
 class _StreamUsersState extends State<StreamUsers> {
   @override

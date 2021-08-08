@@ -13,7 +13,7 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
 
   final _formKey = GlobalKey<FormState>();
-  String firstname, lastname, email, password;
+  String fullname, email, password;
   bool _loading = false;
   bool _obscureText = true;
 
@@ -53,31 +53,29 @@ class _RegisterState extends State<Register> {
       return null;
   }
 
-  Future loginPersistence(String uid, String firstname, String lastname, String email) async {
+  Future loginPersistence(String uid, String fullname, String email) async {
     SharedPreferences userData = await SharedPreferences.getInstance();
     userData.setBool("login", true);
     userData.setString("uid", uid);
-    userData.setString("firstname", firstname);
-    userData.setString("lastname", lastname);
+    userData.setString("fullname", fullname);
     userData.setString("email", email);
   }
 
-  Future registerUser(String firstname, String lastname, String email, String password) async {
+  Future registerUser(String fullname, String email, String password) async {
     setState(() {
       _loading = true;
     });
     try{
       UserCredential createdUser = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
       FirebaseFirestore.instance.collection("users").doc(createdUser.user.uid).set({
-        "Firstname" : firstname,
-        "Lastname" : lastname,
+        "Fullname" : fullname,
         "Email" : email,
         "Bio" : "",
         "Following" : [],
         "Followers" : []
       });
       FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-      loginPersistence(createdUser.user.uid, firstname, lastname, email);
+      loginPersistence(createdUser.user.uid, fullname, email);
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
           HomePage()), (route) => false);
     }catch(e){
@@ -141,41 +139,22 @@ class _RegisterState extends State<Register> {
                       key: _formKey,
                       child: Column(
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Flexible(
-                                child: TextFormField(
-                                  enableSuggestions: true,
-                                  validator: nameValidator,
-                                  onChanged: (value) => firstname = value,
-                                  cursorColor: Color.fromRGBO(255,40,147, 1),
-                                  decoration: new InputDecoration(
-                                    labelText: "\t\tFirstname",
-                                    labelStyle: TextStyle(
-                                      color: Colors.grey
-                                    ),
-                                  ),
-                                ),
+                          TextFormField(
+                            enableSuggestions: true,
+                            validator: nameValidator,
+                            onChanged: (value) => fullname = value,
+                            keyboardType: TextInputType.name,
+                            cursorColor: Color.fromRGBO(255,40,147, 1),
+                            decoration: new InputDecoration(
+                              labelText: "Fullname",
+                              prefixIcon: Icon(
+                                Icons.person_outline_outlined,
+                                color: Color.fromRGBO(255,40,147, 1),
                               ),
-                              SizedBox(
-                                width: 20.0,
+                              labelStyle: TextStyle(
+                                color: Colors.grey
                               ),
-                              Flexible(
-                                child: TextFormField(
-                                  enableSuggestions: true,
-                                  validator: nameValidator,
-                                  onChanged: (value) => lastname = value,
-                                  cursorColor: Color.fromRGBO(255,40,147, 1),
-                                  decoration: new InputDecoration(
-                                    labelText: "\t\tLastname",
-                                    labelStyle: TextStyle(
-                                      color: Colors.grey
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                           SizedBox(
                             height: 20.0,
@@ -263,7 +242,7 @@ class _RegisterState extends State<Register> {
                         // disabledTextColor: Colors.black12,
                         onPressed: _checkBoxValue ? () {
                           if(_formKey.currentState.validate()){
-                            registerUser(firstname, lastname, email, password);
+                            registerUser(fullname, email, password);
                           }
                         } : null,
                         shape: RoundedRectangleBorder(

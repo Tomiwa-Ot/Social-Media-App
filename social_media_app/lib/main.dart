@@ -52,7 +52,7 @@ class _StartPageState extends State<StartPage> {
           primarySwatch: Colors.deepPurple,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        home: _isLoggedIn ? HomePage() : Auth(),
+        home: _isLoggedIn ? HomePage() : HomePage(),
         color: Color.fromRGBO(75, 0, 130, 1),
       )
     );

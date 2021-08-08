@@ -17,14 +17,19 @@ class HomePage extends StatefulWidget {
 
   // final String uid;
 }
-
+// Adjust Firestore records and add more Call search method from another class, ontextFormFocus 
 class _HomePageState extends State<HomePage> {
 
   int _selectedIndex = 0;
+  bool showSearchBar = false;
+  bool showCancelSearch = false;
+  TextEditingController searchController = new TextEditingController();
   PageController _pageController = PageController();
+  FocusNode _focusNode = FocusNode();
 
   void _onItemTapped(int index){
     setState(() {
+      index == 0 ? showSearchBar = false : showSearchBar = true;
       _selectedIndex = index;
     });
     _pageController.jumpToPage(index);
@@ -33,8 +38,7 @@ class _HomePageState extends State<HomePage> {
   Future removeUserData() async {
     SharedPreferences userData = await SharedPreferences.getInstance();
     userData.setBool("login", false);
-    userData.remove("firstname");
-    userData.remove("lastname");
+    userData.remove("fullname");
     userData.remove("email");
   }
 
@@ -49,6 +53,46 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0.0,
+        title: showSearchBar ? SizedBox(
+          height: 53.0,
+          child: TextFormField(
+            controller: searchController,
+            enableSuggestions: true,
+            focusNode: _focusNode,
+            maxLines: 1,
+            minLines: 1,
+            cursorColor: Color.fromRGBO(255,40,147, 1),
+            decoration: InputDecoration(
+              suffixIcon: showCancelSearch ? IconButton(
+                icon: Icon(CupertinoIcons.xmark, color: Color.fromRGBO(75, 0, 130, 1)),
+                onPressed: (){
+                  searchController.clear();
+                },
+              ) : null,
+              filled: true,
+              fillColor: Color.fromRGBO(200, 200, 200, 1),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Color.fromRGBO(200, 200, 200, 1), width: 2.0),
+                borderRadius: BorderRadius.circular(15.0)
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Color.fromRGBO(200, 200, 200, 1), width: 2.0),
+                borderRadius: BorderRadius.circular(15.0)
+              ),
+              border: OutlineInputBorder(
+                borderSide: BorderSide(color: Color.fromRGBO(200, 200, 200, 1), width: 2.0),
+                borderRadius: BorderRadius.circular(15.0)
+              ),
+              hintText: "Search",
+              hintStyle: TextStyle(
+                fontWeight: FontWeight.w500
+              )
+            ),
+            onChanged: (value) {
+              
+            },
+          ),
+        ) : null,
         iconTheme: IconThemeData(
           color: Color.fromRGBO(75, 0, 130, 1),
         ),

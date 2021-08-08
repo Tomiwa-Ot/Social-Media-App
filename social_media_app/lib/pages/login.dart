@@ -13,7 +13,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
 
   final _formKey = GlobalKey<FormState>();
-  String firstname, lastname, email, password;
+  String fullname, email, password;
   bool _loading = false;
   bool _obscureText = true;
 
@@ -38,12 +38,11 @@ class _LoginState extends State<Login> {
       return null;
   }
 
-  Future loginPersistence(String uid, String firstname, String lastname, String email) async {
+  Future loginPersistence(String uid, String fullname, String email) async {
     SharedPreferences userData = await SharedPreferences.getInstance();
     userData.setString("uid", uid);
     userData.setBool("login", true);
-    userData.setString("firstname", firstname);
-    userData.setString("lastname", lastname);
+    userData.setString("fullname", fullname);
     userData.setString("email", email);
   }
 
@@ -55,10 +54,9 @@ class _LoginState extends State<Login> {
       UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
       FirebaseFirestore.instance.collection("users")
       .doc(userCredential.user.uid).get().then((DocumentSnapshot documentSnapshot){
-        firstname = documentSnapshot.get("Firstname");
-        lastname = documentSnapshot.get("Lastname");
+        fullname = documentSnapshot.get("Fullname");
       });
-      loginPersistence(userCredential.user.uid, firstname, lastname, email);
+      loginPersistence(userCredential.user.uid, fullname, email);
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
         HomePage()), (route) => false);
     }catch(e){

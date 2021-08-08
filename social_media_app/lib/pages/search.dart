@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 
@@ -8,51 +9,75 @@ class Search extends StatefulWidget {
 }
 
 class _SearchState extends State<Search> {
+
+  bool isSearchEmpty = false;
+  bool isSearching = false;
+  QuerySnapshot searchResult;
+
+  Future search(String value) async {
+    FirebaseFirestore.instance.collection("users")
+    .where("Fullname", isGreaterThanOrEqualTo: value).get().then((value) {
+      if(value.docs.isNotEmpty){
+        setState(() {
+          searchResult = value;
+          isSearchEmpty = true;
+        });
+      }else{
+        setState(() {
+          isSearchEmpty = false;
+        });
+      }
+    });
+  }
+  
+  Widget searchEmpty(){
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text("No Results")
+        ],
+      ),
+    );
+  }
+
+  Widget results(){
+    return ListView.builder(
+      itemCount: searchResult.docs.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          leading: CircleAvatar(
+            backgroundColor: Color.fromRGBO(75, 0, 130, 1),
+            radius: 40.0,
+          ),
+          title: Text(searchResult.docs[index].data()['Fullname']),
+        );
+      },
+    );
+  }
+
+  Widget body(){
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text("Body",
+            style: TextStyle(
+              fontSize: 20.0
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromRGBO(250, 250, 250, 1),
-      // appBar: AppBar(
-      //   backgroundColor: Colors.white,
-      //   title: SizedBox(
-      //     height: 50.0,
-      //     child: Row(
-      //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //       children: [
-      //         SizedBox(
-      //           width: 310.0,
-      //           child: Flexible(
-      //             child: TextFormField(
-      //               cursorColor: Color.fromRGBO(255,40,147, 1),
-      //               enableSuggestions: true,
-      //               decoration: InputDecoration(
-      //                 hintText: "Search",
-      //                 fillColor: Color.fromRGBO(200, 200, 200, 1),
-      //                 filled: true,
-      //                 enabledBorder: OutlineInputBorder(
-      //                   borderSide: BorderSide(color: Color.fromRGBO(200, 200, 200, 1),),
-      //                   borderRadius: new BorderRadius.circular(5.0),
-      //                 ),
-      //                 focusedBorder: OutlineInputBorder(
-      //                   borderSide: BorderSide(color: Color.fromRGBO(200, 200, 200, 1),),
-      //                   borderRadius: new BorderRadius.circular(5.0),
-      //                 ),
-      //               ),
-      //             ),
-      //           ),
-      //         ),
-      //         Flexible(
-      //           child: IconButton(
-      //             icon: Icon(Icons.search, color: Color.fromRGBO(75, 0, 130, 1)),
-      //             onPressed: (){
-
-      //             },
-      //           ),
-      //         )
-      //       ],
-      //     )
-      //   )
-      // ),
+      body: isSearching ? (isSearchEmpty ? searchEmpty() : results()) : body(),
     );
   }
 }
