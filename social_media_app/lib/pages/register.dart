@@ -53,10 +53,9 @@ class _RegisterState extends State<Register> {
       return null;
   }
 
-  Future loginPersistence(String uid, String fullname, String email) async {
+  Future loginPersistence(String fullname, String email) async {
     SharedPreferences userData = await SharedPreferences.getInstance();
     userData.setBool("login", true);
-    userData.setString("uid", uid);
     userData.setString("fullname", fullname);
     userData.setString("email", email);
   }
@@ -66,18 +65,21 @@ class _RegisterState extends State<Register> {
       _loading = true;
     });
     try{
-      UserCredential createdUser = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
-      FirebaseFirestore.instance.collection("users").doc(createdUser.user.uid).set({
-        "Fullname" : fullname,
-        "Email" : email,
-        "Bio" : "",
-        "Following" : [],
-        "Followers" : []
-      });
-      FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-      loginPersistence(createdUser.user.uid, fullname, email);
+      FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
+      UserCredential createdUser = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+      if(createdUser != null){
+        FirebaseFirestore.instance.collection("users").doc(createdUser.user.uid).set({
+          "ID" : createdUser.user.uid,
+          "Fullname" : fullname,
+          "Email" : email,
+          "Bio" : "",
+          "Following" : [],
+          "Followers" : []
+        });
+      }
+      loginPersistence(fullname, email);
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-          HomePage()), (route) => false);
+          HomePage(fullname: fullname, email: email,)), (route) => false);
     }catch(e){
       setState(() {
         _loading = false;

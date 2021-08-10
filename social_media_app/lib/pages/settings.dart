@@ -88,7 +88,7 @@ class _SettingsState extends State<Settings> {
                   ListTile(
                     title: Text("Help Center (FAQs)"),
                     onTap: () {
-                      
+            
                     },
                   ),
                   Divider(height:1.0),

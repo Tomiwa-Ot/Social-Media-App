@@ -38,9 +38,8 @@ class _LoginState extends State<Login> {
       return null;
   }
 
-  Future loginPersistence(String uid, String fullname, String email) async {
+  Future loginPersistence(String fullname, String email) async {
     SharedPreferences userData = await SharedPreferences.getInstance();
-    userData.setString("uid", uid);
     userData.setBool("login", true);
     userData.setString("fullname", fullname);
     userData.setString("email", email);
@@ -52,13 +51,15 @@ class _LoginState extends State<Login> {
     });
     try{
       UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-      FirebaseFirestore.instance.collection("users")
-      .doc(userCredential.user.uid).get().then((DocumentSnapshot documentSnapshot){
-        fullname = documentSnapshot.get("Fullname");
-      });
-      loginPersistence(userCredential.user.uid, fullname, email);
+      if(userCredential != null){
+        FirebaseFirestore.instance.collection("users")
+        .doc(userCredential.user.uid).get().then((DocumentSnapshot documentSnapshot){
+          fullname = documentSnapshot.get("Fullname");
+        });
+      }
+      loginPersistence(fullname, email);
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-        HomePage()), (route) => false);
+        HomePage(fullname: fullname, email: email,)), (route) => false);
     }catch(e){
       setState(() {
         _loading = false;

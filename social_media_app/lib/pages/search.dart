@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:social_media_app/pages/profile.dart';
 
 
 class Search extends StatefulWidget {
@@ -10,24 +12,29 @@ class Search extends StatefulWidget {
 
 class _SearchState extends State<Search> {
 
-  bool isSearchEmpty = false;
+  User user = FirebaseAuth.instance.currentUser;
+  bool isSearchEmpty = true;
   bool isSearching = false;
   QuerySnapshot searchResult;
 
   Future search(String value) async {
-    FirebaseFirestore.instance.collection("users")
-    .where("Fullname", isGreaterThanOrEqualTo: value).get().then((value) {
-      if(value.docs.isNotEmpty){
-        setState(() {
-          searchResult = value;
-          isSearchEmpty = true;
-        });
-      }else{
-        setState(() {
-          isSearchEmpty = false;
-        });
-      }
-    });
+    if(user != null){
+      FirebaseFirestore.instance.collection("users")
+      .where("Fullname", isGreaterThanOrEqualTo: value).get().then((value) {
+        if(value.docs.isNotEmpty){
+          setState(() {
+            print("not empty");
+            searchResult = value;
+            isSearchEmpty = false;
+          });
+        }else{
+          print("empty");
+          setState(() {
+            isSearchEmpty = true;
+          });
+        }
+      });
+    }
   }
   
   Widget searchEmpty(){
@@ -46,12 +53,29 @@ class _SearchState extends State<Search> {
     return ListView.builder(
       itemCount: searchResult.docs.length,
       itemBuilder: (context, index) {
-        return ListTile(
-          leading: CircleAvatar(
-            backgroundColor: Color.fromRGBO(75, 0, 130, 1),
-            radius: 40.0,
-          ),
-          title: Text(searchResult.docs[index].data()['Fullname']),
+        return GestureDetector(
+          onTap: (){
+            Navigator.push(context, MaterialPageRoute(
+              builder: (context) => Profile(                  
+                  uId: searchResult.docs[index].data()['ID'],  
+                  fullname: searchResult.docs[index].data()['Fullname'], 
+                  email: searchResult.docs[index].data()['Email'], 
+                )
+            ));
+          },
+          child: Column(
+            children: [
+               ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: Color.fromRGBO(75, 0, 130, 1),
+                    radius: 40.0,
+                  ),
+                  title: Text(searchResult.docs[index].data()['Fullname']),
+                ),
+                SizedBox(height: 5.0),
+                Divider()
+            ],
+          )
         );
       },
     );
