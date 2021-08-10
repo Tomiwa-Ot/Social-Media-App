@@ -81,7 +81,7 @@ class _StreamUsersState extends State<StreamUsers> {
                 child: CircularProgressIndicator(),
               );
             }
-            if(snapshot.connectionState == ConnectionState.done && snapshot.data[widget.title].length == 0){
+            if(snapshot.data[widget.title].length == 0){
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
