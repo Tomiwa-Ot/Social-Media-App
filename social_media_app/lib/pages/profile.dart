@@ -1,22 +1,26 @@
 import 'dart:convert';
-
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:path/path.dart' as p;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:social_media_app/pages/streamusers.dart';
 
 class Profile extends StatefulWidget {
   @override
   _ProfileState createState() => _ProfileState();
 
-  Profile({this.uId, this.fullname, this.email}); 
+  Profile({this.uId, this.fullname, this.email, this.photo}); 
 
   final String uId;
   final String fullname;
   final String email;
+  final String photo;
 }
 
 class _ProfileState extends State<Profile> {
@@ -52,20 +56,25 @@ class _ProfileState extends State<Profile> {
   }
 
   void uploadProfilePhoto(ImageSource source) async {
+    bool uploading = false;
    final file = await ImagePicker.pickImage(source: source);
     if(file != null){
       showDialog(
         context: context,
         builder: (_) => new AlertDialog(
           title: new Text("Upload Profile Photo"),
-          content: SizedBox(
-            height: 100.0,
-            child: Center(
-              child: CircleAvatar(
-                radius: 50.0,
-                backgroundImage: FileImage(file),
-              ),
-            )
+          content: StatefulBuilder(
+            builder: (context, setState) {
+              return SizedBox(
+                height: 100.0,
+                child: Center(
+                  child: uploading ? CircularProgressIndicator() : CircleAvatar(
+                    radius: 50.0,
+                    backgroundImage: FileImage(file),
+                  ),
+                )
+              );
+            },
           ),
           actions: <Widget>[
             FlatButton(
@@ -85,7 +94,28 @@ class _ProfileState extends State<Profile> {
                   color: Colors.white,
                 ),
               ),
-              onPressed: () {
+              onPressed: () async{
+                if(user != null){
+                 try{
+                   setState(() {
+                     uploading = true;
+                   });
+                    String fileExt = p.extension(file.path);
+                    String fileName = p.basenameWithoutExtension(file.path);
+                    String curTime = DateTime.now().toIso8601String().toString();
+                    final _firebaseStorage = FirebaseStorage.instance;
+                    var snapshot = await _firebaseStorage.ref()
+                      .child('users/${user.uid}/ProfilePhoto/$fileName$curTime.$fileExt')
+                      .putFile(file);
+                    var downloadUrl = await snapshot.ref.getDownloadURL();
+                    SharedPreferences userData = await SharedPreferences.getInstance();
+                    userData.setString("photo", downloadUrl);
+                  }catch(e) {
+                    setState(() {
+                      uploading = false;
+                     });
+                  }
+                }
                 Navigator.of(context).pop();
               },
             ),
@@ -140,12 +170,12 @@ class _ProfileState extends State<Profile> {
                         CircleAvatar(
                           backgroundColor: Color.fromRGBO(75, 0, 130, 1),
                           radius: 40.0,
-                          child: Text(snapshot.data['Fullname'].toString().split(" ")[1][0],
+                          child: widget.photo.isEmpty ? Text(snapshot.data['Fullname'].toString().split(" ")[1][0],
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 40.0
                             )
-                          ),
+                          ) : ClipOval(child: CachedNetworkImage(imageUrl: widget.photo),)
                         ),
                         Padding(
                           padding: EdgeInsets.fromLTRB(30.0, 35.0, 0.0, 0.0),
@@ -201,22 +231,29 @@ class _ProfileState extends State<Profile> {
                     subtitle: Text(snapshot.data["Email"]),
                     trailing: IconButton(
                       icon: Icon(Icons.edit, color: Color.fromRGBO(75, 0, 130, 1)),
-                      onPressed: (){
+                      onPressed: () {
+                        bool uploading = false;
                         showDialog(
                           context: context,
                           builder: (_) => new AlertDialog(
                             title: new Text("Edit Fullname"),
-                            content: SizedBox(
-                              height: 50.0,
-                              child: TextFormField(
-                                controller: nameController,
-                                enableSuggestions: true,
-                                cursorColor: Color.fromRGBO(255,40,147, 1),
-                                maxLines: 1,
-                                decoration: InputDecoration(
-                                  hintText: "Enter fullname"
-                                ),
-                              )
+                            content: StatefulBuilder(
+                              builder: (context, setState) {
+                                return SizedBox(
+                                  height: 50.0,
+                                  child: uploading ? Center(
+                                    child: CircularProgressIndicator(),
+                                  ) : TextFormField(
+                                    controller: nameController,
+                                    enableSuggestions: true,
+                                    cursorColor: Color.fromRGBO(255,40,147, 1),
+                                    maxLines: 1,
+                                    decoration: InputDecoration(
+                                      hintText: "Enter fullname"
+                                    ),
+                                  )
+                                );
+                              },
                             ),
                             actions: <Widget>[
                               FlatButton(
@@ -236,7 +273,24 @@ class _ProfileState extends State<Profile> {
                                     color: Colors.white,
                                   ),
                                 ),
-                                onPressed: () {
+                                onPressed: () async {
+                                  if(user != null){
+                                    try{
+                                      setState(() {
+                                        uploading = true;
+                                      });
+                                      FirebaseFirestore.instance.collection("users")
+                                      .doc(user.uid).update({
+                                        "Fullname" : nameController.text
+                                      });
+                                      SharedPreferences userData = await SharedPreferences.getInstance();
+                                      userData.setString("fullname", nameController.text);
+                                    }catch(e){
+                                      setState(() {
+                                        uploading = false;
+                                      });
+                                    }
+                                  }
                                   Navigator.of(context).pop();
                                 },
                               ),

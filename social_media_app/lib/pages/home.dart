@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -134,17 +135,24 @@ class _HomePageState extends State<HomePage> {
                     leading: GestureDetector(
                       onTap: (){
                         Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => Profile(uId: user.uid, fullname: widget.fullname, email: widget.email)
+                          builder: (context) => Profile(
+                            uId: user.uid,
+                            fullname: widget.fullname,
+                            email: widget.email,
+                            photo: widget.photo,
+                          )
                         ));
                       },
                       child: CircleAvatar(
                         radius: 25.0,
-                        child: Text("widget.fullname.split(" ")[1][0]}}",
+                        child: widget.photo.isEmpty ? Text("widget.fullname.split(" ")[1][0]}}",
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 40.0
                           )
-                        ),
+                        ) : ClipOval(
+                          child: CachedNetworkImage(imageUrl: widget.photo,),
+                        )
                       ),
                     ),
                     title: Text("${widget.fullname}"),
@@ -248,6 +256,7 @@ class _HomePageState extends State<HomePage> {
                                 uId: user.uid,
                                 fullname: widget.fullname,
                                 email: widget.email,
+                                photo: widget.photo,
                               )
                             ));
                           },

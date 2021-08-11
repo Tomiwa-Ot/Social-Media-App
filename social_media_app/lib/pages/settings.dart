@@ -144,58 +144,62 @@ class _SettingsState extends State<Settings> {
                         context: context,
                         builder: (_) => new AlertDialog(
                           title: new Text("Rate App"),
-                          content: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Flexible(
-                                child: IconButton(
-                                  icon: Icon(rating >=1 ? Icons.star : Icons.star_border_outlined, color: Color.fromRGBO(75, 0, 130, 1), size: 35.0,),
-                                  onPressed: (){
+                          content: StatefulBuilder(
+                            builder: (context, setState) {
+                              return Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Flexible(
+                                    child: IconButton(
+                                      icon: Icon(rating >=1 ? Icons.star : Icons.star_border_outlined, color: Color.fromRGBO(75, 0, 130, 1), size: 35.0,),
+                                      onPressed: (){
 
-                                  },
-                                )
-                              ),
-                              Flexible(
-                                child: IconButton(
-                                  icon: Icon(rating >=2 ? Icons.star : Icons.star_border_outlined, color: Color.fromRGBO(75, 0, 130, 1), size: 35.0,),
-                                  onPressed: (){
-                                    setState(() {
-                                      rating = 2;
-                                    });
-                                  },
-                                )
-                              ),
-                              Flexible(
-                                child: IconButton(
-                                  icon: Icon(rating >=3 ? Icons.star : Icons.star_border_outlined, color: Color.fromRGBO(75, 0, 130, 1), size: 35.0,),
-                                  onPressed: (){
-                                    setState(() {
-                                      rating = 3;
-                                    });
-                                  },
-                                )
-                              ),
-                              Flexible(
-                                child: IconButton(
-                                  icon: Icon(rating >=4 ? Icons.star : Icons.star_border_outlined, color: Color.fromRGBO(75, 0, 130, 1), size: 35.0,),
-                                  onPressed: (){
-                                    setState(() {
-                                      rating = 4;
-                                    });
-                                  },
-                                )
-                              ),
-                              Flexible(
-                                child: IconButton(
-                                  icon: Icon(rating >=5 ? Icons.star : Icons.star_border_outlined, color: Color.fromRGBO(75, 0, 130, 1), size: 35.0,),
-                                  onPressed: (){
-                                    setState(() {
-                                      rating = 5;
-                                    });
-                                  },
-                                )
-                              ),
-                            ],
+                                      },
+                                    )
+                                  ),
+                                  Flexible(
+                                    child: IconButton(
+                                      icon: Icon(rating >=2 ? Icons.star : Icons.star_border_outlined, color: Color.fromRGBO(75, 0, 130, 1), size: 35.0,),
+                                      onPressed: (){
+                                        setState(() {
+                                          rating = 2;
+                                        });
+                                      },
+                                    )
+                                  ),
+                                  Flexible(
+                                    child: IconButton(
+                                      icon: Icon(rating >=3 ? Icons.star : Icons.star_border_outlined, color: Color.fromRGBO(75, 0, 130, 1), size: 35.0,),
+                                      onPressed: (){
+                                        setState(() {
+                                          rating = 3;
+                                        });
+                                      },
+                                    )
+                                  ),
+                                  Flexible(
+                                    child: IconButton(
+                                      icon: Icon(rating >=4 ? Icons.star : Icons.star_border_outlined, color: Color.fromRGBO(75, 0, 130, 1), size: 35.0,),
+                                      onPressed: (){
+                                        setState(() {
+                                          rating = 4;
+                                        });
+                                      },
+                                    )
+                                  ),
+                                  Flexible(
+                                    child: IconButton(
+                                      icon: Icon(rating >=5 ? Icons.star : Icons.star_border_outlined, color: Color.fromRGBO(75, 0, 130, 1), size: 35.0,),
+                                      onPressed: (){
+                                        setState(() {
+                                          rating = 5;
+                                        });
+                                      },
+                                    )
+                                  ),
+                                ],
+                              );
+                            },
                           ),
                           actions: <Widget>[
                             FlatButton(

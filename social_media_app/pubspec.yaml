@@ -41,6 +41,8 @@ dependencies:
   image_picker: ^0.6.7+22
   cached_network_image: ^2.5.0
   permission_handler: any
+  barcode_scan_fix: ^1.0.2
+  
 
 dev_dependencies:
   flutter_test:
