@@ -13,7 +13,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
 
   final _formKey = GlobalKey<FormState>();
-  String fullname, email, password;
+  String fullname, email, password, photo;
   bool _loading = false;
   bool _obscureText = true;
 
@@ -38,11 +38,12 @@ class _LoginState extends State<Login> {
       return null;
   }
 
-  Future loginPersistence(String fullname, String email) async {
+  Future loginPersistence(String fullname, String email, String photo) async {
     SharedPreferences userData = await SharedPreferences.getInstance();
     userData.setBool("login", true);
     userData.setString("fullname", fullname);
     userData.setString("email", email);
+    userData.setString("photo", photo);
   }
 
   Future login(String email, String password) async { 
@@ -55,11 +56,12 @@ class _LoginState extends State<Login> {
         FirebaseFirestore.instance.collection("users")
         .doc(userCredential.user.uid).get().then((DocumentSnapshot documentSnapshot){
           fullname = documentSnapshot.get("Fullname");
+          photo = documentSnapshot.get("Photo");
         });
       }
-      loginPersistence(fullname, email);
+      loginPersistence(fullname, email, photo);
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-        HomePage(fullname: fullname, email: email,)), (route) => false);
+        HomePage(fullname: fullname, email: email, photo: photo,)), (route) => false);
     }catch(e){
       setState(() {
         _loading = false;

@@ -1,6 +1,11 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:social_media_app/pages/streamusers.dart';
 
 class Profile extends StatefulWidget {
@@ -17,9 +22,13 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
 
   String firstname, lastname, email;
-  bool followButtonVisible = false;
+  bool followButtonVisible = false, following = false;
   User user = FirebaseAuth.instance.currentUser;
   Stream<DocumentSnapshot> stream;
+  TextEditingController nameController = new TextEditingController();
+
+  ImageSource get cameraSource => ImageSource.camera;
+  ImageSource get gallerySource => ImageSource.gallery;
 
   void initState(){
     if(user != null){
@@ -33,14 +42,60 @@ class _ProfileState extends State<Profile> {
   void showFollowButton(){
     if(user.uid == widget.uId){
       setState(() {
-        followButtonVisible = true;
+        followButtonVisible = false;
       });
     }else{
       setState(() {
-        followButtonVisible = false;
+        followButtonVisible = true;
       });
     }
   }
+
+  void uploadProfilePhoto(ImageSource source) async {
+   final file = await ImagePicker.pickImage(source: source);
+    if(file != null){
+      showDialog(
+        context: context,
+        builder: (_) => new AlertDialog(
+          title: new Text("Upload Profile Photo"),
+          content: SizedBox(
+            height: 100.0,
+            child: Center(
+              child: CircleAvatar(
+                radius: 50.0,
+                backgroundImage: FileImage(file),
+              ),
+            )
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Close',
+                style: TextStyle(
+                  color: Color.fromRGBO(75, 0, 130, 1),
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              color: Color.fromRGBO(75, 0, 130, 1),
+              child: Text('Upload',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        )
+      );
+    } 
+  }
+
+
 
 
 
@@ -60,6 +115,16 @@ class _ProfileState extends State<Profile> {
         child: StreamBuilder<DocumentSnapshot>(
           stream: stream,
           builder: (context, snapshot) {
+            // if(jsonDecode(snapshot.data['Followers']).length != 0){
+            //   List followers = jsonDecode(snapshot.data['Followers']);
+            //   if(followers.contains(user.uid)){
+            //     setState(() {
+            //       following = true;
+            //     });
+            //   }
+            // }
+            
+            nameController.text = snapshot.data['Fullname'];            
             if(!snapshot.hasData){
               return Center(
                 child: CircularProgressIndicator(),
@@ -70,16 +135,114 @@ class _ProfileState extends State<Profile> {
               child: Column(
                 children: [
                   ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Color.fromRGBO(75, 0, 130, 1),
-                      radius: 40.0,
+                    leading: Stack(
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: Color.fromRGBO(75, 0, 130, 1),
+                          radius: 40.0,
+                          child: Text(snapshot.data['Fullname'].toString().split(" ")[1][0],
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 40.0
+                            )
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(30.0, 35.0, 0.0, 0.0),
+                          child: IconButton(
+                            icon: Icon(CupertinoIcons.camera, color: Color.fromRGBO(180, 180, 180, 1),),
+                            onPressed: (){
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (context){
+                                  return SizedBox(
+                                    height: 130.0,
+                                    child: Column(
+                                      children: [
+                                        ListTile(
+                                          leading: Icon(CupertinoIcons.camera),
+                                          title: Text("Camera"),
+                                          onTap: () async {
+                                            if(await Permission.camera.isGranted){
+                                              uploadProfilePhoto(cameraSource);
+                                            }else{
+                                              await Permission.camera.request();
+                                              if(await Permission.camera.isGranted){
+                                                uploadProfilePhoto(cameraSource);
+                                              }
+                                            }
+                                          },
+                                        ),
+                                        ListTile(
+                                          leading: Icon(CupertinoIcons.photo),
+                                          title: Text("Gallery"),
+                                          onTap: () async {
+                                            if(await Permission.photos.isGranted){
+                                              uploadProfilePhoto(gallerySource);
+                                            }else{
+                                              await Permission.photos.request();
+                                              if(await Permission.photos.isGranted){
+                                                uploadProfilePhoto(gallerySource);
+                                              }
+                                            }
+                                          },
+                                        )
+                                      ],
+                                    )
+                                  );
+                                }
+                              );
+                            },
+                          ),
+                        )
+                      ],
                     ),
                     title: Text(snapshot.data["Fullname"]),
                     subtitle: Text(snapshot.data["Email"]),
                     trailing: IconButton(
                       icon: Icon(Icons.edit, color: Color.fromRGBO(75, 0, 130, 1)),
                       onPressed: (){
-
+                        showDialog(
+                          context: context,
+                          builder: (_) => new AlertDialog(
+                            title: new Text("Edit Fullname"),
+                            content: SizedBox(
+                              height: 50.0,
+                              child: TextFormField(
+                                controller: nameController,
+                                enableSuggestions: true,
+                                cursorColor: Color.fromRGBO(255,40,147, 1),
+                                maxLines: 1,
+                                decoration: InputDecoration(
+                                  hintText: "Enter fullname"
+                                ),
+                              )
+                            ),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: Text('Close',
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(75, 0, 130, 1),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              FlatButton(
+                                color: Color.fromRGBO(75, 0, 130, 1),
+                                child: Text('Update',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          )
+                        );
                       },
                     ),
                   ),
@@ -89,13 +252,49 @@ class _ProfileState extends State<Profile> {
                   followButtonVisible ? SizedBox(
                     height: 30.0,
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+                      padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
                       child: RaisedButton(
+                        color: Color.fromRGBO(230, 230, 230, 1),
+                        shape: RoundedRectangleBorder(
+                          // borderRadius: new BorderRadius.circular(30.0),
+                          side: BorderSide(color: Color.fromRGBO(50,50,50, 1), width: 1.0),
+                        ),
                         child: Center(
-                          child: Text("Follow"),
+                          child: Text(following ? "Unfollow" : "Follow"),
                         ),
                         onPressed: (){
-
+                          // if(following){
+                          //   if(user != null){
+                          //     List userFollowers = jsonDecode(snapshot.data['Followers']);
+                          //     userFollowers.remove(user.uid);
+                          //     FirebaseFirestore.instance.collection("users")
+                          //       .doc(widget.uId).update({
+                          //         "Followers" : jsonEncode(userFollowers).toString()
+                          //       });
+                          //     List following = jsonDecode(snapshot.data['Following']);
+                          //     userFollowers.remove(widget.uId);
+                          //     FirebaseFirestore.instance.collection("users")
+                          //       .doc(user.uid).update({
+                          //         "Following" : jsonEncode(following).toString()
+                          //       });
+                          //   }
+                          // }else{
+                          //   if(user != null){
+                          //     List userFollowers = jsonDecode(snapshot.data['Followers']);
+                          //     userFollowers.add(user.uid);
+                          //     FirebaseFirestore.instance.collection("users")
+                          //       .doc(widget.uId).update({
+                          //         "Followers" : jsonEncode(userFollowers).toString()
+                          //       });
+                          //     List following = jsonDecode(snapshot.data['Following']);
+                          //     userFollowers.add(widget.uId);
+                          //     FirebaseFirestore.instance.collection("users")
+                          //       .doc(user.uid).update({
+                          //         "Following" : jsonEncode(following).toString()
+                          //       });
+                          //   }
+                          // }
+                          
                         },
                       ),
                     )
@@ -115,14 +314,14 @@ class _ProfileState extends State<Profile> {
                             builder: (context) => StreamUsers(
                               title: "Following",
                               uid: user.uid,
-                              users: snapshot.data['Following'],
+                              users: jsonDecode(snapshot.data['Following']),
                               streamUsers: false,
                             )
                           ));
                         },
                         child: Column(
                           children: [
-                            Text(snapshot.data['Following'].length.toString(),
+                            Text(jsonDecode(snapshot.data['Following']).length.toString(),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20.0,
@@ -138,12 +337,17 @@ class _ProfileState extends State<Profile> {
                       GestureDetector(
                         onTap: (){
                           Navigator.push(context, MaterialPageRoute(
-                            builder: (context) => StreamUsers(title: "Followers", uid: user.uid, users: snapshot.data['Following'], streamUsers: false,)
+                            builder: (context) => StreamUsers(
+                              title: "Followers",
+                              uid: user.uid,
+                              users: jsonDecode(snapshot.data['Following']),
+                              streamUsers: false,
+                            )
                           ));
                         },
                         child: Column(
                           children: [
-                            Text(snapshot.data['Followers'].length.toString(),
+                            Text(jsonDecode(snapshot.data['Followers']).length.toString(),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20.0,
@@ -165,92 +369,3 @@ class _ProfileState extends State<Profile> {
   }
 }
 
-
-// Container(
-//         color: Colors.white,
-//           child: Column(
-//             children: [
-//               ListTile(
-//                 leading: CircleAvatar(
-//                   backgroundColor: Color.fromRGBO(75, 0, 130, 1),
-//                   radius: 40.0,
-//                 ),
-//                 title: Text("${widget.fullname}"),
-//                 subtitle: Text("${widget.email}"),
-//                 trailing: IconButton(
-//                   icon: Icon(Icons.edit, color: Color.fromRGBO(75, 0, 130, 1)),
-//                   onPressed: (){
-
-//                   },
-//                 ),
-//               ),
-//               SizedBox(
-//                 height: 10.0
-//               ),
-//               followButtonVisible ? SizedBox(
-//                 height: 30.0,
-//                 child: Padding(
-//                   padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
-//                   child: RaisedButton(
-//                     child: Center(
-//                       child: Text("Follow"),
-//                     ),
-//                     onPressed: (){
-
-//                     },
-//                   ),
-//                 )
-//               ) : Container(),
-//               Padding(
-//                 padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
-//                 child: Divider(
-//                   color: Color.fromRGBO(230, 230, 230, 1),
-//                 ),
-//               ),
-//               Row(
-//                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//                 children: [
-//                   GestureDetector(
-//                     onTap: (){
-//                       Navigator.push(context, MaterialPageRoute(
-//                         builder: (context) => StreamUsers(title: "Following", uid: "user id",)
-//                       ));
-//                     },
-//                     child: Column(
-//                       children: [
-//                         Text("0",
-//                           style: TextStyle(
-//                             fontWeight: FontWeight.bold,
-//                             fontSize: 20.0,
-//                           ),
-//                         ),
-//                         Text("FOLLOWING")
-//                       ],
-//                     ),
-//                   ),
-//                   VerticalDivider(
-                    
-//                   ),
-//                   GestureDetector(
-//                     onTap: (){
-//                       Navigator.push(context, MaterialPageRoute(
-//                         builder: (context) => StreamUsers(title: "Followers", uid: "user id",)
-//                       ));
-//                     },
-//                     child: Column(
-//                       children: [
-//                         Text("0",
-//                           style: TextStyle(
-//                             fontWeight: FontWeight.bold,
-//                             fontSize: 20.0,
-//                           ),
-//                         ),
-//                         Text("FOLLOWERS")
-//                       ],
-//                     ),
-//                   )
-//                 ],
-//               )
-//             ],
-//           ),
-//         ),

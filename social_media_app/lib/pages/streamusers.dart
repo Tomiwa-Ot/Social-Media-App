@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +53,13 @@ class _StreamUsersState extends State<StreamUsers> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text("Nobody")
+                Text("Nobody",
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromRGBO(100, 100, 100, 1)
+                  ),
+                )
               ],
             )
           ) : ListView.builder(
@@ -81,19 +89,25 @@ class _StreamUsersState extends State<StreamUsers> {
                 child: CircularProgressIndicator(),
               );
             }
-            if(snapshot.data[widget.title].length == 0){
+            if(jsonDecode(snapshot.data[widget.title]).length == 0){
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text("Nobody")
+                    Text("Nobody",
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromRGBO(100, 100, 100, 1)
+                      ),
+                    )
                   ],
                 ),
               );
             }
             return ListView.builder(
-              itemCount: snapshot.data[widget.title].length,
+              itemCount: jsonDecode(snapshot.data[widget.title]).length,
               itemBuilder: (context, index) {
                 return Column(
                   children: [
@@ -102,7 +116,7 @@ class _StreamUsersState extends State<StreamUsers> {
                         backgroundColor: Color.fromRGBO(75, 0, 130, 1),
                         radius: 40.0,
                       ),
-                      title: Text(snapshot.data[widget.title][index]),
+                      title: Text(jsonDecode(snapshot.data[widget.title])[index]),
                     ),
                     SizedBox(height: 5.0),
                     Divider()

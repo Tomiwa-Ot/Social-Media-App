@@ -32,6 +32,7 @@ class _SettingsState extends State<Settings> {
     userData.setBool("login", false);
     userData.remove("fullname");
     userData.remove("email");
+    userData.remove("photo");
   }
 
   Future deleteUser() async {

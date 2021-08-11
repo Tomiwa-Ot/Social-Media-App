@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class Drafts extends StatefulWidget {
+class Bookmark extends StatefulWidget {
 
   @override
-  _DraftsState createState() => _DraftsState();
+  _BookmarkState createState() => _BookmarkState();
 }
 
-class _DraftsState extends State<Drafts> {
+class _BookmarkState extends State<Bookmark> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,7 +17,7 @@ class _DraftsState extends State<Drafts> {
         iconTheme: IconThemeData(
           color: Color.fromRGBO(75, 0, 130, 1),
         ),
-        title: Text("Drafts",
+        title: Text("Bookmark",
           style: TextStyle(
             color: Color.fromRGBO(75, 0, 130, 1),
           ),

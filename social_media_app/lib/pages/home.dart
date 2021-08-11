@@ -3,8 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:social_media_app/pages/auth.dart';
+import 'package:social_media_app/pages/bookmark.dart';
 import 'package:social_media_app/pages/feed.dart';
-import 'package:social_media_app/pages/post-drafts.dart';
 import 'package:social_media_app/pages/profile.dart';
 import 'package:social_media_app/pages/qr-code.dart';
 import 'package:social_media_app/pages/search.dart';
@@ -14,12 +14,13 @@ import 'package:social_media_app/pages/streamusers.dart';
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
-  HomePage({this.fullname, this.email}); 
+  HomePage({this.fullname, this.email, this.photo}); 
 
   final String fullname;
   final String email;
+  final String photo;
 }
-// add more Call search method from another class
+// add more Call search method from another class refresh data
 class _HomePageState extends State<HomePage> {
 
   int _selectedIndex = 0;
@@ -65,6 +66,7 @@ class _HomePageState extends State<HomePage> {
     userData.setBool("login", false);
     userData.remove("fullname");
     userData.remove("email");
+    userData.remove("photo");
   }
 
   final List<Widget> navWidgets = [
@@ -137,6 +139,12 @@ class _HomePageState extends State<HomePage> {
                       },
                       child: CircleAvatar(
                         radius: 25.0,
+                        child: Text("widget.fullname.split(" ")[1][0]}}",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 40.0
+                          )
+                        ),
                       ),
                     ),
                     title: Text("${widget.fullname}"),
@@ -245,15 +253,15 @@ class _HomePageState extends State<HomePage> {
                           },
                         ),
                         ListTile(
-                          leading: Icon(CupertinoIcons.doc_plaintext, color: Color.fromRGBO(75, 0, 130, 1)),
-                          title: Text("Drafts",
+                          leading: Icon(CupertinoIcons.bookmark, color: Color.fromRGBO(75, 0, 130, 1)),
+                          title: Text("Bookmark",
                             style: TextStyle(
                               fontSize: 17.0
                             ),
                           ),
                           onTap: () async{
                             Navigator.push(context, MaterialPageRoute(
-                              builder: (context) => Drafts()
+                              builder: (context) => Bookmark()
                             ));
                           },
                         ),

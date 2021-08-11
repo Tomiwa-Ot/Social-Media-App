@@ -53,11 +53,12 @@ class _RegisterState extends State<Register> {
       return null;
   }
 
-  Future loginPersistence(String fullname, String email) async {
+  Future loginPersistence(String fullname, String email, String photo) async {
     SharedPreferences userData = await SharedPreferences.getInstance();
     userData.setBool("login", true);
     userData.setString("fullname", fullname);
     userData.setString("email", email);
+    userData.setString("photo", photo);
   }
 
   Future registerUser(String fullname, String email, String password) async {
@@ -73,13 +74,14 @@ class _RegisterState extends State<Register> {
           "Fullname" : fullname,
           "Email" : email,
           "Bio" : "",
-          "Following" : [],
-          "Followers" : []
+          "Photo" : "",
+          "Following" : [].toString(),
+          "Followers" : [].toString()
         });
       }
-      loginPersistence(fullname, email);
+      loginPersistence(fullname, email, "");
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-          HomePage(fullname: fullname, email: email,)), (route) => false);
+          HomePage(fullname: fullname, email: email, photo: "",)), (route) => false);
     }catch(e){
       setState(() {
         _loading = false;
