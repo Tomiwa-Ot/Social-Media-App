@@ -213,9 +213,10 @@ class _SettingsState extends State<Settings> {
                               },
                             ),
                             FlatButton(
+                              color: Color.fromRGBO(75, 0, 130, 1),
                               child: Text('Submit',
                                 style: TextStyle(
-                                  color: Color.fromRGBO(75, 0, 130, 1),
+                                  color: Colors.white
                                 ),
                               ),
                               onPressed: () {
