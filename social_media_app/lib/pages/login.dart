@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,7 +12,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
 
   final _formKey = GlobalKey<FormState>();
-  String fullname, email, password, photo;
+  String email, password;
   bool _loading = false;
   bool _obscureText = true;
 
@@ -38,12 +37,9 @@ class _LoginState extends State<Login> {
       return null;
   }
 
-  Future loginPersistence(String fullname, String email, String photo) async {
+  Future loginPersistence() async {
     SharedPreferences userData = await SharedPreferences.getInstance();
     userData.setBool("login", true);
-    userData.setString("fullname", fullname);
-    userData.setString("email", email);
-    userData.setString("photo", photo);
   }
 
   Future login(String email, String password) async { 
@@ -51,17 +47,10 @@ class _LoginState extends State<Login> {
       _loading = true;
     });
     try{
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-      if(userCredential != null){
-        FirebaseFirestore.instance.collection("users")
-        .doc(userCredential.user.uid).get().then((DocumentSnapshot documentSnapshot){
-          fullname = documentSnapshot.get("Fullname");
-          photo = documentSnapshot.get("Photo");
-        });
-      }
-      loginPersistence(fullname, email, photo);
+      await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+      loginPersistence();
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-        HomePage(fullname: fullname, email: email, photo: photo,)), (route) => false);
+        HomePage()), (route) => false);
     }catch(e){
       setState(() {
         _loading = false;

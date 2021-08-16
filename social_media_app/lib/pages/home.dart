@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,50 +12,33 @@ import 'package:social_media_app/pages/feed.dart';
 import 'package:social_media_app/pages/profile.dart';
 import 'package:social_media_app/pages/qr-code.dart';
 import 'package:social_media_app/pages/search.dart';
-import 'package:social_media_app/pages/settings.dart';
 import 'package:social_media_app/pages/streamusers.dart';
 
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
-  HomePage({this.fullname, this.email, this.photo}); 
-
-  final String fullname;
-  final String email;
-  final String photo;
 }
 // add more Call search method from another class refresh data
 class _HomePageState extends State<HomePage> {
 
+  
   int _selectedIndex = 0;
   bool showSearchBar = false;
   bool showCancelSearch = false;
   TextEditingController searchController = new TextEditingController();
   PageController _pageController = PageController();
   FocusNode _focusNode = FocusNode();
+  Stream<DocumentSnapshot> stream;
   User user = FirebaseAuth.instance.currentUser;
 
   void initState(){
-    _focusNode.addListener(() {
-      if(_focusNode.hasFocus){
-        setState(() {
-          showCancelSearch = true;
-        });
-      }else{
-        setState(() {
-          showCancelSearch = false;
-        });
-      }
-    });
+    if(user != null){
+      stream = FirebaseFirestore.instance.collection("users")
+        .doc(user.uid).snapshots();
+    }
     super.initState();
   }
 
-  @override
-  void dispose(){
-    _focusNode.removeListener(() {});
-    _focusNode.dispose();
-    super.dispose();
-  }
 
   void _onItemTapped(int index){
     setState(() {
@@ -65,9 +51,6 @@ class _HomePageState extends State<HomePage> {
   Future removeUserData() async {
     SharedPreferences userData = await SharedPreferences.getInstance();
     userData.setBool("login", false);
-    userData.remove("fullname");
-    userData.remove("email");
-    userData.remove("photo");
   }
 
   final List<Widget> navWidgets = [
@@ -78,7 +61,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: _selectedIndex == 0 ? AppBar(
         backgroundColor: Colors.white,
         elevation: 0.0,
         title: showSearchBar ? SizedBox(
@@ -124,114 +107,121 @@ class _HomePageState extends State<HomePage> {
         iconTheme: IconThemeData(
           color: Color.fromRGBO(75, 0, 130, 1),
         ),
-      ),
+      ) : null,
       drawer: Drawer(
         child: Column(
           children: [
             DrawerHeader(
               child: ListView(
                 children: [
-                  ListTile(
-                    leading: GestureDetector(
-                      onTap: (){
-                        Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => Profile(
-                            uId: user.uid,
-                            fullname: widget.fullname,
-                            email: widget.email,
-                            photo: widget.photo,
-                          )
-                        ));
-                      },
-                      child: CircleAvatar(
-                        radius: 25.0,
-                        child: widget.photo.isEmpty ? Text("widget.fullname.split(" ")[1][0]}}",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 40.0
-                          )
-                        ) : ClipOval(
-                          child: CachedNetworkImage(imageUrl: widget.photo,),
-                        )
-                      ),
-                    ),
-                    title: Text("${widget.fullname}"),
-                    subtitle: Text("${widget.email}"),
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(5.0, 0.0, 0.0, 0.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Flexible(
-                          child: GestureDetector(
-                            onTap: (){
-                              Navigator.push(context, MaterialPageRoute(
-                                builder: (context) => StreamUsers(
-                                  title: "Following", 
-                                  uid: user.uid, 
-                                  users: [], 
-                                  streamUsers: true,
+                  StreamBuilder<DocumentSnapshot>(
+                    stream: stream,
+                    builder: (context, snapshot){
+                      if(!snapshot.hasData){
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      return Column(
+                        children: [ 
+                          ListTile(
+                            leading: GestureDetector(
+                              onTap: (){
+                                Navigator.push(context, MaterialPageRoute(
+                                  builder: (context) => Profile(
+                                    uId: user.uid,
+                                  )
+                                ));
+                              },
+                              child: CircleAvatar(
+                                radius: 25.0,
+                                child: snapshot.data['Photo'].isEmpty ? Text(snapshot.data['Fullname'].toString().split(" ")[1][0],
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 40.0
+                                  )
+                                ) : ClipOval(
+                                  child: CachedNetworkImage(imageUrl: snapshot.data['Photo']),
                                 )
-                              ));
-                            },
+                              ),
+                            ),
+                            title: Text(snapshot.data['Fullname']),
+                            subtitle: Text(snapshot.data['Email']),
+                          ),
+                          SizedBox(
+                            height: 20.0,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(5.0, 0.0, 0.0, 0.0),
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Flexible(
-                                  child: Text("230"),
-                                ),
-                                SizedBox(
-                                  width: 10.0,
+                                  child: GestureDetector(
+                                    onTap: (){
+                                      Navigator.push(context, MaterialPageRoute(
+                                        builder: (context) => StreamUsers(
+                                          title: "Following", 
+                                          uid: user.uid, 
+                                        )
+                                      ));
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Flexible(
+                                          child: Text(jsonDecode(snapshot.data['Following']).length.toString()),
+                                        ),
+                                        SizedBox(
+                                          width: 10.0,
+                                        ),
+                                        Flexible(
+                                          child: Text("Following",
+                                            style: TextStyle(
+                                              color: Colors.grey,
+                                              fontWeight: FontWeight.w400
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
                                 ),
                                 Flexible(
-                                  child: Text("Following",
-                                    style: TextStyle(
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.w400
+                                  child: GestureDetector(
+                                    onTap: (){
+                                      Navigator.push(context, MaterialPageRoute(
+                                        builder: (context) => StreamUsers(
+                                          title: "Followers", 
+                                          uid: user.uid, 
+                                        )
+                                      ));
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Flexible(
+                                          child: Text(jsonDecode(snapshot.data['Followers']).length.toString()),
+                                        ),
+                                        SizedBox(
+                                          width: 10.0,
+                                        ),
+                                        Flexible(
+                                          child: Text("Followers",
+                                            style: TextStyle(
+                                              color: Colors.grey,
+                                              fontWeight: FontWeight.w400
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        ),
-                        Flexible(
-                          child: GestureDetector(
-                            onTap: (){
-                              Navigator.push(context, MaterialPageRoute(
-                                builder: (context) => StreamUsers(
-                                  title: "Followers", 
-                                  uid: user.uid, 
-                                  users: [], 
-                                  streamUsers: true,
+                                  )
                                 )
-                              ));
-                            },
-                            child: Row(
-                              children: [
-                                Flexible(
-                                  child: Text("168"),
-                                ),
-                                SizedBox(
-                                  width: 10.0,
-                                ),
-                                Flexible(
-                                  child: Text("Followers",
-                                    style: TextStyle(
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.w400
-                                    ),
-                                  ),
-                                ),
                               ],
-                            ),
+                            )
                           )
-                        )
-                      ],
-                    )
+                        ],
+                      );
+                    },
                   )
                 ],
               ),
@@ -254,9 +244,6 @@ class _HomePageState extends State<HomePage> {
                             Navigator.push(context, MaterialPageRoute(
                               builder: (context) => Profile(
                                 uId: user.uid,
-                                fullname: widget.fullname,
-                                email: widget.email,
-                                photo: widget.photo,
                               )
                             ));
                           },
@@ -282,9 +269,9 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                           onTap: (){
-                            Navigator.push(context, MaterialPageRoute(
-                              builder: (context) => Settings()
-                            ));
+                            // Navigator.push(context, MaterialPageRoute(
+                            //   builder: (context) => Settings()
+                            // ));
                           },
                         )
                       ],

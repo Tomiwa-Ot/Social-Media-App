@@ -19,7 +19,6 @@ class _StartPageState extends State<StartPage> {
 
   SharedPreferences data;
   bool _isLoggedIn = false;
-  String fullname, email, photo;
 
   Future<FirebaseApp> initializeFirebase() async{
     FirebaseApp firebaseApp = await Firebase.initializeApp();
@@ -31,9 +30,6 @@ class _StartPageState extends State<StartPage> {
     bool _val = data.getBool("login");
     if(_val == true){
       setState(() {
-        fullname = data.getString("fullname");
-        email = data.getString("email");
-        photo = data.getString("photo");
         _isLoggedIn = !_isLoggedIn;
       });
     }
@@ -54,7 +50,7 @@ class _StartPageState extends State<StartPage> {
           primarySwatch: Colors.deepPurple,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        home: _isLoggedIn ? HomePage(fullname: fullname, email: email, photo: photo,) : Auth(),
+        home: _isLoggedIn ? HomePage() : Auth(),
         color: Color.fromRGBO(75, 0, 130, 1),
       )
     );

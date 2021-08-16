@@ -8,12 +8,10 @@ class StreamUsers extends StatefulWidget {
   
   @override
   _StreamUsersState createState() => _StreamUsersState();
-  StreamUsers({this.title, this.uid, this.users, this.streamUsers});
+  StreamUsers({this.title, this.uid,});
 
   final String title;
   final String uid;
-  final List users;
-  final bool streamUsers;
 }
 
 
@@ -46,45 +44,11 @@ class _StreamUsersState extends State<StreamUsers> {
         ),
         backgroundColor: Colors.white
       ),
-      body: !widget.streamUsers ? 
-        (widget.users.length == 0 ? 
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text("Nobody",
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromRGBO(100, 100, 100, 1)
-                  ),
-                )
-              ],
-            )
-          ) : ListView.builder(
-            itemCount: widget.users.length,
-            itemBuilder: (context, index) {
-              return Column(
-                children: [
-                  ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Color.fromRGBO(75, 0, 130, 1),
-                      radius: 40.0,
-                    ),
-                    title: Text(widget.users[index]),
-                  ),
-                  SizedBox(height: 5.0),
-                  Divider()
-                ],
-              );
-            },
-          )
-        ) : Container(
+      body:  Container(
         child: StreamBuilder<DocumentSnapshot>(
           stream: stream,
           builder: (context, snapshot) {
-            if(snapshot.connectionState == ConnectionState.active){
+            if(!snapshot.hasData){
               return Center(
                 child: CircularProgressIndicator(),
               );

@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:path/path.dart' as p;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,12 +17,9 @@ class Profile extends StatefulWidget {
   @override
   _ProfileState createState() => _ProfileState();
 
-  Profile({this.uId, this.fullname, this.email, this.photo}); 
+  Profile({this.uId}); 
 
   final String uId;
-  final String fullname;
-  final String email;
-  final String photo;
 }
 
 class _ProfileState extends State<Profile> {
@@ -94,7 +93,7 @@ class _ProfileState extends State<Profile> {
                   color: Colors.white,
                 ),
               ),
-              onPressed: () async{
+              onPressed: !uploading ? () async{
                 if(user != null){
                  try{
                    setState(() {
@@ -110,14 +109,28 @@ class _ProfileState extends State<Profile> {
                     var downloadUrl = await snapshot.ref.getDownloadURL();
                     SharedPreferences userData = await SharedPreferences.getInstance();
                     userData.setString("photo", downloadUrl);
+                    FirebaseFirestore.instance.collection("users")
+                      .doc(user.uid).update({
+                        "Photo" : downloadUrl
+                      });
                   }catch(e) {
                     setState(() {
                       uploading = false;
                      });
+                     showSimpleNotification(
+                      Text("Failed"),
+                      background: Color.fromRGBO(75, 0, 130, 1),
+                      duration: Duration(seconds: 1),
+                      subtitle: Text("Profile photo upload failed",
+                        style: TextStyle(
+                          color: Color.fromRGBO(255,40,147, 1)
+                        ),
+                      )
+                     );
                   }
+                  Navigator.of(context).pop();
                 }
-                Navigator.of(context).pop();
-              },
+              } : null,
             ),
           ],
         )
@@ -154,7 +167,9 @@ class _ProfileState extends State<Profile> {
             //   }
             // }
             
-            nameController.text = snapshot.data['Fullname'];            
+            if(snapshot.hasData){
+              nameController.text = snapshot.data['Fullname']; 
+            }
             if(!snapshot.hasData){
               return Center(
                 child: CircularProgressIndicator(),
@@ -170,12 +185,12 @@ class _ProfileState extends State<Profile> {
                         CircleAvatar(
                           backgroundColor: Color.fromRGBO(75, 0, 130, 1),
                           radius: 40.0,
-                          child: widget.photo.isEmpty ? Text(snapshot.data['Fullname'].toString().split(" ")[1][0],
+                          child: snapshot.data['Photo'].isEmpty ? Text(snapshot.data['Fullname'].toString().split(" ")[1][0],
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 40.0
                             )
-                          ) : ClipOval(child: CachedNetworkImage(imageUrl: widget.photo),)
+                          ) : ClipOval(child: CachedNetworkImage(imageUrl: snapshot.data['Photo']),)
                         ),
                         Padding(
                           padding: EdgeInsets.fromLTRB(30.0, 35.0, 0.0, 0.0),
@@ -273,7 +288,7 @@ class _ProfileState extends State<Profile> {
                                     color: Colors.white,
                                   ),
                                 ),
-                                onPressed: () async {
+                                onPressed: !uploading ? () async {
                                   if(user != null){
                                     try{
                                       setState(() {
@@ -289,10 +304,20 @@ class _ProfileState extends State<Profile> {
                                       setState(() {
                                         uploading = false;
                                       });
+                                      showSimpleNotification(
+                                        Text("Failed"),
+                                        background: Color.fromRGBO(75, 0, 130, 1),
+                                        duration: Duration(seconds: 1),
+                                        subtitle: Text("Fullname update failed",
+                                          style: TextStyle(
+                                            color: Color.fromRGBO(255,40,147, 1)
+                                          ),
+                                        )
+                                      );
                                     }
+                                    Navigator.of(context).pop();
                                   }
-                                  Navigator.of(context).pop();
-                                },
+                                } : null,
                               ),
                             ],
                           )
@@ -368,8 +393,6 @@ class _ProfileState extends State<Profile> {
                             builder: (context) => StreamUsers(
                               title: "Following",
                               uid: user.uid,
-                              users: jsonDecode(snapshot.data['Following']),
-                              streamUsers: false,
                             )
                           ));
                         },
@@ -394,8 +417,6 @@ class _ProfileState extends State<Profile> {
                             builder: (context) => StreamUsers(
                               title: "Followers",
                               uid: user.uid,
-                              users: jsonDecode(snapshot.data['Following']),
-                              streamUsers: false,
                             )
                           ));
                         },

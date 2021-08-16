@@ -30,9 +30,6 @@ class _SettingsState extends State<Settings> {
   Future removeUserData() async {
     SharedPreferences userData = await SharedPreferences.getInstance();
     userData.setBool("login", false);
-    userData.remove("fullname");
-    userData.remove("email");
-    userData.remove("photo");
   }
 
   Future deleteUser() async {
