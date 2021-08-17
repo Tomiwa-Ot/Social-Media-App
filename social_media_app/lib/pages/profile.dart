@@ -186,15 +186,31 @@ class _ProfileState extends State<Profile> {
                   ListTile(
                     leading: Stack(
                       children: [
-                        CircleAvatar(
-                          backgroundColor: Color.fromRGBO(75, 0, 130, 1),
+                        snapshot.data['Photo'].isEmpty ? CircleAvatar(
                           radius: 40.0,
-                          child: snapshot.data['Photo'].isEmpty ? Text(snapshot.data['Fullname'].toString().split(" ")[1][0],
+                          child: Text(snapshot.data['Fullname'].toString().split(" ")[1][0],
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 40.0
                             )
-                          ) : ClipOval(child: CachedNetworkImage(imageUrl: snapshot.data['Photo']),)
+                          )
+                        ) : CachedNetworkImage(
+                          imageUrl: snapshot.data['Photo'],
+                          imageBuilder: (context, imageProvider) {
+                            return Container(
+                              width: 80.0,
+                              height: 80.0,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: DecorationImage(
+                                  image: imageProvider,
+                                  fit: BoxFit.cover
+                                )
+                              ),
+                            );
+                          },
+                          placeholder: (context, url) => CircularProgressIndicator(),
+                          errorWidget: (context, url, error) => Icon(Icons.error, color: Colors.red,),
                         ),
                         Padding(
                           padding: EdgeInsets.fromLTRB(30.0, 35.0, 0.0, 0.0),

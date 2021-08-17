@@ -124,9 +124,7 @@ class _HomePageState extends State<HomePage> {
                         );
                       }
                       if(snapshot.hasData){
-                        setState(() {
-                          profilePhoto = snapshot.data['Photo'];
-                        });
+                        profilePhoto = snapshot.data['Photo'];
                       }
                       return Column(
                         children: [ 
@@ -139,17 +137,31 @@ class _HomePageState extends State<HomePage> {
                                   )
                                 ));
                               },
-                              child: CircleAvatar(
+                              child: snapshot.data['Photo'].isEmpty ? CircleAvatar(
                                 radius: 25.0,
-                                child: snapshot.data['Photo'].isEmpty ? Text(snapshot.data['Fullname'].toString().split(" ")[1][0],
+                                child: Text(snapshot.data['Fullname'].toString().split(" ")[1][0],
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 40.0
-                                  )
-                                ) : ClipOval(
-                                  child: CachedNetworkImage(imageUrl: snapshot.data['Photo']),
-                                )
-                              ),
+                                  ))
+                                ) : CachedNetworkImage(
+                                  imageUrl: snapshot.data['Photo'],
+                                  imageBuilder: (context, imageProvider) {
+                                    return Container(
+                                      width: 60.0,
+                                      height: 60.0,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        image: DecorationImage(
+                                          image: imageProvider,
+                                          fit: BoxFit.cover
+                                        )
+                                      ),
+                                    );
+                                  },
+                                  placeholder: (context, url) => CircularProgressIndicator(),
+                                  errorWidget: (context, url, error) => Icon(Icons.error, color: Colors.red,),
+                                ),
                             ),
                             title: Text(snapshot.data['Fullname']),
                             subtitle: Text(snapshot.data['Email']),

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -57,7 +58,7 @@ class _SearchState extends State<Search> {
   Future search(List cases) async {
     if(user != null){
       FirebaseFirestore.instance.collection("users")
-      .where("Fullname", arrayContains: cases).get().then((value) {
+      .where("Fullname", arrayContainsAny: cases).get().then((value) {
         if(value.docs.isNotEmpty){
           setState(() {
             print("not empty");
@@ -93,7 +94,7 @@ class _SearchState extends State<Search> {
         return GestureDetector(
           onTap: (){
             Navigator.push(context, MaterialPageRoute(
-              builder: (context) => Profile(                  
+              builder: (context) => Profile(
                   uId: searchResult.docs[index].data()['ID'],
                 )
             ));
@@ -104,15 +105,31 @@ class _SearchState extends State<Search> {
                 height: 10.0,
               ),
               ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: Color.fromRGBO(75, 0, 130, 1),
-                  radius: 40.0,
+                leading: searchResult.docs[index].data()['Photo'].isEmpty ? CircleAvatar(
+                  radius: 25.0,
                   child: Text(searchResult.docs[index].data()['Fullname'].toString().split(" ")[1][0],
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 40.0
-                    ),
-                  ),
+                    )
+                  )
+                ) : CachedNetworkImage(
+                  imageUrl: searchResult.docs[index].data()['Photo'],
+                  imageBuilder: (context, imageProvider) {
+                    return Container(
+                      width: 25.0,
+                      height: 25.0,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          image: imageProvider,
+                          fit: BoxFit.cover
+                        )
+                      ),
+                    );
+                  },
+                  placeholder: (context, url) => CircularProgressIndicator(),
+                  errorWidget: (context, url, error) => Icon(Icons.error, color: Colors.red,),
                 ),
                 title: Text(searchResult.docs[index].data()['Fullname']),
               ),
