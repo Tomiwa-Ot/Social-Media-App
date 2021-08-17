@@ -158,17 +158,21 @@ class _ProfileState extends State<Profile> {
         child: StreamBuilder<DocumentSnapshot>(
           stream: stream,
           builder: (context, snapshot) {
-            // if(jsonDecode(snapshot.data['Followers']).length != 0){
-            //   List followers = jsonDecode(snapshot.data['Followers']);
-            //   if(followers.contains(user.uid)){
-            //     setState(() {
-            //       following = true;
-            //     });
-            //   }
-            // }
             
             if(snapshot.hasData){
-              nameController.text = snapshot.data['Fullname']; 
+              nameController.text = snapshot.data['Fullname'];
+              if(jsonDecode(snapshot.data['Followers']).length != 0){
+                List followers = jsonDecode(snapshot.data['Followers']);
+                if(followers.contains(user.uid)){
+                  setState(() {
+                    following = true;
+                  });
+                }else{
+                  setState(() {
+                    following = false;
+                  });
+                }
+              }
             }
             if(!snapshot.hasData){
               return Center(
@@ -342,37 +346,37 @@ class _ProfileState extends State<Profile> {
                           child: Text(following ? "Unfollow" : "Follow"),
                         ),
                         onPressed: (){
-                          // if(following){
-                          //   if(user != null){
-                          //     List userFollowers = jsonDecode(snapshot.data['Followers']);
-                          //     userFollowers.remove(user.uid);
-                          //     FirebaseFirestore.instance.collection("users")
-                          //       .doc(widget.uId).update({
-                          //         "Followers" : jsonEncode(userFollowers).toString()
-                          //       });
-                          //     List following = jsonDecode(snapshot.data['Following']);
-                          //     userFollowers.remove(widget.uId);
-                          //     FirebaseFirestore.instance.collection("users")
-                          //       .doc(user.uid).update({
-                          //         "Following" : jsonEncode(following).toString()
-                          //       });
-                          //   }
-                          // }else{
-                          //   if(user != null){
-                          //     List userFollowers = jsonDecode(snapshot.data['Followers']);
-                          //     userFollowers.add(user.uid);
-                          //     FirebaseFirestore.instance.collection("users")
-                          //       .doc(widget.uId).update({
-                          //         "Followers" : jsonEncode(userFollowers).toString()
-                          //       });
-                          //     List following = jsonDecode(snapshot.data['Following']);
-                          //     userFollowers.add(widget.uId);
-                          //     FirebaseFirestore.instance.collection("users")
-                          //       .doc(user.uid).update({
-                          //         "Following" : jsonEncode(following).toString()
-                          //       });
-                          //   }
-                          // }
+                          if(following){
+                            if(user != null){
+                              List userFollowers = jsonDecode(snapshot.data['Followers']);
+                              userFollowers.remove(user.uid);
+                              FirebaseFirestore.instance.collection("users")
+                                .doc(widget.uId).update({
+                                  "Followers" : jsonEncode(userFollowers).toString()
+                                });
+                              List following = jsonDecode(snapshot.data['Following']);
+                              userFollowers.remove(widget.uId);
+                              FirebaseFirestore.instance.collection("users")
+                                .doc(user.uid).update({
+                                  "Following" : jsonEncode(following).toString()
+                                });
+                            }
+                          }else{
+                            if(user != null){
+                              List userFollowers = jsonDecode(snapshot.data['Followers']);
+                              userFollowers.add(user.uid);
+                              FirebaseFirestore.instance.collection("users")
+                                .doc(widget.uId).update({
+                                  "Followers" : jsonEncode(userFollowers).toString()
+                                });
+                              List following = jsonDecode(snapshot.data['Following']);
+                              userFollowers.add(widget.uId);
+                              FirebaseFirestore.instance.collection("users")
+                                .doc(user.uid).update({
+                                  "Following" : jsonEncode(following).toString()
+                                });
+                            }
+                          }
                           
                         },
                       ),

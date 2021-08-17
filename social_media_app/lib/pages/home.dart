@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,6 +11,7 @@ import 'package:social_media_app/pages/feed.dart';
 import 'package:social_media_app/pages/profile.dart';
 import 'package:social_media_app/pages/qr-code.dart';
 import 'package:social_media_app/pages/search.dart';
+import 'package:social_media_app/pages/settings_page.dart';
 import 'package:social_media_app/pages/streamusers.dart';
 
 class HomePage extends StatefulWidget {
@@ -25,6 +25,7 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   bool showSearchBar = false;
   bool showCancelSearch = false;
+  String profilePhoto;
   TextEditingController searchController = new TextEditingController();
   PageController _pageController = PageController();
   FocusNode _focusNode = FocusNode();
@@ -121,6 +122,11 @@ class _HomePageState extends State<HomePage> {
                         return Center(
                           child: CircularProgressIndicator(),
                         );
+                      }
+                      if(snapshot.hasData){
+                        setState(() {
+                          profilePhoto = snapshot.data['Photo'];
+                        });
                       }
                       return Column(
                         children: [ 
@@ -269,9 +275,13 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                           onTap: (){
-                            // Navigator.push(context, MaterialPageRoute(
-                            //   builder: (context) => Settings()
-                            // ));
+                            Navigator.push(context, MaterialPageRoute(
+                              builder: (context) => SettingsPage(
+                                uid: user.uid,
+                                isPhotoEmpty: profilePhoto.isEmpty,
+                                profilePhoto: profilePhoto.isEmpty ? "" : profilePhoto,
+                              )
+                            ));
                           },
                         )
                       ],

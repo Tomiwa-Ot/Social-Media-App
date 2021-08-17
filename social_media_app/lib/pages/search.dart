@@ -167,15 +167,15 @@ class _SearchState extends State<Search> {
               fillColor: Color.fromRGBO(200, 200, 200, 1),
               focusedBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: Color.fromRGBO(200, 200, 200, 1), width: 2.0),
-                borderRadius: BorderRadius.circular(15.0)
+                borderRadius: BorderRadius.circular(5.0)
               ),
               enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: Color.fromRGBO(200, 200, 200, 1), width: 2.0),
-                borderRadius: BorderRadius.circular(15.0)
+                borderRadius: BorderRadius.circular(5.0)
               ),
               border: OutlineInputBorder(
                 borderSide: BorderSide(color: Color.fromRGBO(200, 200, 200, 1), width: 2.0),
-                borderRadius: BorderRadius.circular(15.0)
+                borderRadius: BorderRadius.circular(5.0)
               ),
               hintText: "Search",
               hintStyle: TextStyle(

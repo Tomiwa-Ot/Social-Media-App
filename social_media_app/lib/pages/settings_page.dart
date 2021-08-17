@@ -1,21 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:social_media_app/pages/auth.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class Settings extends StatefulWidget {
+class SettingsPage extends StatefulWidget {
 
   @override
-  _SettingsState createState() => _SettingsState();
+  _SettingsPageState createState() => _SettingsPageState();
 
-  Settings({this.uid});
+  SettingsPage({this.uid, this.profilePhoto, this.isPhotoEmpty});
 
+  final String profilePhoto;
+  final bool isPhotoEmpty;
   final String uid;
 }
 
-class _SettingsState extends State<Settings> {
+class _SettingsPageState extends State<SettingsPage> {
 
   int rating = 0;
 
@@ -36,6 +39,9 @@ class _SettingsState extends State<Settings> {
     try{
       FirebaseAuth.instance.signOut();
       FirebaseFirestore.instance.collection("users").doc(widget.uid).delete();
+      if(widget.isPhotoEmpty){
+        FirebaseStorage.instance.ref().child(widget.profilePhoto).delete();
+      }
       removeUserData();
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
         Auth()), (route) => false);
