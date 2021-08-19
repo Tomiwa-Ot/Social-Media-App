@@ -56,7 +56,7 @@ class _ProfileState extends State<Profile> {
 
   void uploadProfilePhoto(ImageSource source) async {
     bool uploading = false;
-   final file = await ImagePicker.pickImage(source: source);
+   final file = await ImagePicker.pickImage(source: source, imageQuality: 70);
     if(file != null){
       showDialog(
         context: context,
