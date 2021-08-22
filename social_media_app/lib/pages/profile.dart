@@ -28,6 +28,7 @@ class _ProfileState extends State<Profile> {
   bool followButtonVisible = false, following = false;
   User user = FirebaseAuth.instance.currentUser;
   Stream<DocumentSnapshot> stream;
+  Stream<DocumentSnapshot> postStream;
   TextEditingController nameController = new TextEditingController();
 
   ImageSource get cameraSource => ImageSource.camera;
@@ -36,6 +37,8 @@ class _ProfileState extends State<Profile> {
   void initState(){
     if(user != null){
       stream = FirebaseFirestore.instance.collection("users")
+        .doc(widget.uId).snapshots();
+      postStream = FirebaseFirestore.instance.collection("posts")
         .doc(widget.uId).snapshots();
     }
     showFollowButton();
@@ -453,6 +456,41 @@ class _ProfileState extends State<Profile> {
                         ),
                       )
                     ],
+                  ),
+                  SizedBox(
+                    height: 15.0
+                  ),
+                  StreamBuilder<DocumentSnapshot>(
+                    stream: postStream,
+                    builder: (context, snapshot) {
+                      if(snapshot.connectionState == ConnectionState.active){
+                        return Center(
+                          child: CircularProgressIndicator()
+                        );
+                      }
+
+                      if(!snapshot.hasData && snapshot.connectionState == ConnectionState.done){
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Text("No Posts",
+                                style: TextStyle(
+                                  fontSize: 18.0
+                                )
+                              )
+                            ]
+                          )
+                        );
+                      }
+
+                      return GridView.builder(
+                        gridDelegate: null,
+                        itemBuilder: null,
+                        
+                      );
+                    }
                   )
                 ],
               ),
