@@ -15,6 +15,18 @@ class Post extends StatefulWidget {
 
 class _PostState extends State<Post> {
 
+  TextEditingController commentController = new TextEditingController();
+
+
+  String commentValidator(String value){
+    Pattern pattern =
+        r'^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$';
+    RegExp regex = new RegExp(pattern);
+    if (!regex.hasMatch(value))
+      return '*Enter a valid name';
+    else
+      return null;
+  }
   
   upload(){
     
@@ -84,8 +96,8 @@ class _PostState extends State<Post> {
                 Padding(
                   padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
                   child: TextFormField(
-                    // validator: fieldvalidator,
-                    // controller: tecDescription,
+                    validator: commentValidator,
+                    controller: commentController,
                     maxLines: 4,
                     // onChanged: (_dec) => orderDescription = _dec,
                     textCapitalization: TextCapitalization.sentences,
@@ -106,7 +118,7 @@ class _PostState extends State<Post> {
                       border: new OutlineInputBorder(
                         borderRadius: new BorderRadius.circular(0.0),
                       ),
-                      hintText: "Description",
+                      hintText: "Comment",
                       hintStyle: TextStyle(
                         color: Colors.black,
                         //fontWeight: FontWeight.bold,
