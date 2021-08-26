@@ -28,7 +28,7 @@ class _ProfileState extends State<Profile> {
   bool followButtonVisible = false, following = false;
   User user = FirebaseAuth.instance.currentUser;
   Stream<DocumentSnapshot> stream;
-  Stream<DocumentSnapshot> postStream;
+  Stream<QuerySnapshot> postStream;
   TextEditingController nameController = new TextEditingController();
 
   ImageSource get cameraSource => ImageSource.camera;
@@ -39,7 +39,7 @@ class _ProfileState extends State<Profile> {
       stream = FirebaseFirestore.instance.collection("users")
         .doc(widget.uId).snapshots();
       postStream = FirebaseFirestore.instance.collection("posts")
-        .doc(widget.uId).snapshots();
+        .doc(widget.uId).collection("doc").snapshots();
     }
     showFollowButton();
     super.initState();
@@ -458,12 +458,16 @@ class _ProfileState extends State<Profile> {
                   SizedBox(
                     height: 15.0
                   ),
-                  StreamBuilder<DocumentSnapshot>(
+                  StreamBuilder<QuerySnapshot>(
                     stream: postStream,
                     builder: (context, snapshot) {
                       if(snapshot.connectionState == ConnectionState.active){
-                        return Center(
-                          child: CircularProgressIndicator()
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+
+                          ],
                         );
                       }
 
@@ -484,8 +488,23 @@ class _ProfileState extends State<Profile> {
                       }
 
                       return GridView.builder(
-                        gridDelegate: null,
-                        itemBuilder: null,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: MediaQuery.of(context).orientation == Orientation.landscape ? 3: 2,
+                          crossAxisSpacing: 8,
+                          mainAxisSpacing: 8,
+                          childAspectRatio: (2 / 1),
+                        ),
+                        itemCount: snapshot.data.docs.length,
+                        itemBuilder: (context, index){
+                          return GestureDetector(
+                            onTap: (){
+
+                            },
+                            child: CachedNetworkImage(
+                              imageUrl: snapshot.data.docs[index]['photoLink'],
+                            ),
+                          );
+                        },
                         
                       );
                     }
