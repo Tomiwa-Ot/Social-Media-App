@@ -19,7 +19,9 @@ class _FeedState extends State<Feed> {
    final file = await ImagePicker.pickImage(source: source);
    Navigator.push(context, MaterialPageRoute(
       builder: (context) => Post(file: file,)
-    ));
+    )).then((value) {
+      Navigator.of(context).pop();
+    });
   }
 
   @override
