@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:social_media_app/pages/post.dart';
 
 class Feed extends StatefulWidget {
 
@@ -14,8 +15,11 @@ class _FeedState extends State<Feed> {
   ImageSource get cameraSource => ImageSource.camera;
   ImageSource get gallerySource => ImageSource.gallery;
 
-  void uploadProfilePhoto(ImageSource source) async {
-   //final file = await ImagePicker.pickImage(source: source); 
+  void uploadPhoto(ImageSource source) async {
+   final file = await ImagePicker.pickImage(source: source);
+   Navigator.push(context, MaterialPageRoute(
+      builder: (context) => Post(file: file,)
+    ));
   }
 
   @override
@@ -38,11 +42,11 @@ class _FeedState extends State<Feed> {
                       title: Text("Camera"),
                       onTap: () async {
                         if(await Permission.camera.isGranted){
-                          
+                          uploadPhoto(cameraSource);
                         }else{
                           await Permission.camera.request();
                           if(await Permission.camera.isGranted){
-                           
+                           uploadPhoto(cameraSource);
                           }
                         }
                       },
@@ -52,11 +56,11 @@ class _FeedState extends State<Feed> {
                       title: Text("Gallery"),
                       onTap: () async {
                         if(await Permission.photos.isGranted){
-                          
+                          uploadPhoto(gallerySource);
                         }else{
                           await Permission.photos.request();
                           if(await Permission.photos.isGranted){
-                            
+                            uploadPhoto(gallerySource);
                           }
                         }
                       },

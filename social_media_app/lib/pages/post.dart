@@ -16,7 +16,7 @@ class Post extends StatefulWidget {
 class _PostState extends State<Post> {
 
   TextEditingController commentController = new TextEditingController();
-
+  final commentKey = GlobalKey<FormState>();
 
   String commentValidator(String value){
     Pattern pattern =
@@ -93,40 +93,43 @@ class _PostState extends State<Post> {
                 SizedBox(
                   height: 20.0,
                 ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
-                  child: TextFormField(
-                    validator: commentValidator,
-                    controller: commentController,
-                    maxLines: 4,
-                    // onChanged: (_dec) => orderDescription = _dec,
-                    textCapitalization: TextCapitalization.sentences,
-                    cursorColor: Color.fromRGBO(237,47,89, 1),
-                    decoration: new InputDecoration(
-                      fillColor: Color.fromRGBO(234, 234, 234, 1),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Color.fromRGBO(234, 234, 234, 1),
+                Form(
+                  key: commentKey,
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+                    child: TextFormField(
+                      validator: commentValidator,
+                      controller: commentController,
+                      maxLines: 4,
+                      // onChanged: (_dec) => orderDescription = _dec,
+                      textCapitalization: TextCapitalization.sentences,
+                      cursorColor: Color.fromRGBO(237,47,89, 1),
+                      decoration: new InputDecoration(
+                        fillColor: Color.fromRGBO(234, 234, 234, 1),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color.fromRGBO(234, 234, 234, 1),
+                          )
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color.fromRGBO(234, 234, 234, 1),
+                          )
+                        ),
+                        filled: true,
+                        border: new OutlineInputBorder(
+                          borderRadius: new BorderRadius.circular(0.0),
+                        ),
+                        hintText: "Comment",
+                        hintStyle: TextStyle(
+                          color: Colors.black,
+                          //fontWeight: FontWeight.bold,
+                          fontSize: 18.0
                         )
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Color.fromRGBO(234, 234, 234, 1),
-                        )
-                      ),
-                      filled: true,
-                      border: new OutlineInputBorder(
-                        borderRadius: new BorderRadius.circular(0.0),
-                      ),
-                      hintText: "Comment",
-                      hintStyle: TextStyle(
-                        color: Colors.black,
-                        //fontWeight: FontWeight.bold,
-                        fontSize: 18.0
-                      )
-                    ),
-                  )
-                ),
+                    )
+                  ),
+                )
               ],
             ),
           ),
