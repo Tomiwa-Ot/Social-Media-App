@@ -46,7 +46,7 @@ class _PostState extends State<Post> {
         .putFile(widget.file);
       var downloadUrl = await snapshot.ref.getDownloadURL();
       FirebaseFirestore.instance.collection("posts")
-        .doc(user.uid).collection("docs").doc().set({
+        .doc().set({
           "user" : user.uid,
           "photoLink" : downloadUrl,
           "comment" : commentController.text,

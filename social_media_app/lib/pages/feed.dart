@@ -24,10 +24,18 @@ class _FeedState extends State<Feed> {
     });
   }
 
+  Future refresh(){
+    
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromRGBO(250, 250, 250, 1),
+      body: RefreshIndicator(
+        onRefresh: refresh,
+        child: Container(),
+      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Color.fromRGBO(75, 0, 130, 1),
         child: Icon(Icons.add, color: Color.fromRGBO(255,40,147, 1)),

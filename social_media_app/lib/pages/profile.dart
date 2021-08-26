@@ -39,7 +39,7 @@ class _ProfileState extends State<Profile> {
       stream = FirebaseFirestore.instance.collection("users")
         .doc(widget.uId).snapshots();
       postStream = FirebaseFirestore.instance.collection("posts")
-        .doc(widget.uId).collection("doc").snapshots();
+        .where("user", isEqualTo: user.uid).snapshots();
     }
     showFollowButton();
     super.initState();
@@ -462,12 +462,8 @@ class _ProfileState extends State<Profile> {
                     stream: postStream,
                     builder: (context, snapshot) {
                       if(snapshot.connectionState == ConnectionState.active){
-                        return Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-
-                          ],
+                        return Center(
+                          child: CircularProgressIndicator()
                         );
                       }
 
@@ -501,7 +497,20 @@ class _ProfileState extends State<Profile> {
 
                             },
                             child: CachedNetworkImage(
-                              imageUrl: snapshot.data.docs[index]['photoLink'],
+                              imageUrl: snapshot.data.docs[index].data()['photoLink'],
+                              imageBuilder: (context, imageProvider){
+                                return Container(
+                                  width: 60.0,
+                                  height: 60.0,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.rectangle,
+                                    image: DecorationImage(
+                                      image: imageProvider,
+                                      fit: BoxFit.cover
+                                    )
+                                  )
+                                );
+                              },
                             ),
                           );
                         },
