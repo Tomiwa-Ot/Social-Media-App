@@ -23,6 +23,7 @@ class _PostState extends State<Post> {
   TextEditingController commentController = new TextEditingController();
   final commentKey = GlobalKey<FormState>();
   User user = FirebaseAuth.instance.currentUser;
+  bool uploading = false;
 
   String commentValidator(String value){
     if (value.isEmpty)
@@ -33,6 +34,9 @@ class _PostState extends State<Post> {
   
   upload() async {
     if(user != null){
+      setState(() {
+        uploading = true;
+      });
       String fileExt = p.extension(widget.file.path);
       String fileName = p.basenameWithoutExtension(widget.file.path);
       String curTime = DateTime.now().toIso8601String().toString();
@@ -47,6 +51,11 @@ class _PostState extends State<Post> {
           "photoLink" : downloadUrl,
           "comment" : commentController.text,
           "likes" : jsonEncode([]).toString()
+        }).then((value) {
+          setState(() {
+            uploading = false;
+          });
+          Navigator.of(context).pop();
         });
     }
   }
@@ -88,7 +97,7 @@ class _PostState extends State<Post> {
           actions: [
             IconButton(
               icon: Icon(Icons.send),
-              onPressed: (){
+              onPressed: uploading ? null : (){
                 if(commentKey.currentState.validate()){
                   upload();
                 }
@@ -110,6 +119,7 @@ class _PostState extends State<Post> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                uploading ? LinearProgressIndicator() : Container(),
                 Padding(
                   padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
                   child: SizedBox(
@@ -131,6 +141,8 @@ class _PostState extends State<Post> {
                       validator: commentValidator,
                       controller: commentController,
                       maxLines: 4,
+                      enabled: !uploading,
+                      showCursor: !uploading,
                       // onChanged: (_dec) => orderDescription = _dec,
                       textCapitalization: TextCapitalization.sentences,
                       cursorColor: Color.fromRGBO(237,47,89, 1),
