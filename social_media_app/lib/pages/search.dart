@@ -58,7 +58,7 @@ class _SearchState extends State<Search> {
   Future search(List cases) async {
     if(user != null){
       FirebaseFirestore.instance.collection("users")
-      .where("Fullname", arrayContainsAny: cases).get().then((value) {
+      .where("Fullname", arrayContains: cases).get().then((value) {
         if(value.docs.isNotEmpty){
           setState(() {
             print("not empty");

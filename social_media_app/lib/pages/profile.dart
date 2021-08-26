@@ -110,8 +110,6 @@ class _ProfileState extends State<Profile> {
                       .child('users/${user.uid}/ProfilePhoto/$fileName$curTime.$fileExt')
                       .putFile(file);
                     var downloadUrl = await snapshot.ref.getDownloadURL();
-                    SharedPreferences userData = await SharedPreferences.getInstance();
-                    userData.setString("photo", downloadUrl);
                     FirebaseFirestore.instance.collection("users")
                       .doc(user.uid).update({
                         "Photo" : downloadUrl

@@ -1,5 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
 
 
@@ -17,19 +22,33 @@ class _PostState extends State<Post> {
 
   TextEditingController commentController = new TextEditingController();
   final commentKey = GlobalKey<FormState>();
+  User user = FirebaseAuth.instance.currentUser;
 
   String commentValidator(String value){
-    Pattern pattern =
-        r'^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$';
-    RegExp regex = new RegExp(pattern);
-    if (!regex.hasMatch(value))
-      return '*Enter a valid name';
+    if (value.isEmpty)
+      return '*This field cannot be empty';
     else
       return null;
   }
   
-  upload(){
-    
+  upload() async {
+    if(user != null){
+      String fileExt = p.extension(widget.file.path);
+      String fileName = p.basenameWithoutExtension(widget.file.path);
+      String curTime = DateTime.now().toIso8601String().toString();
+      final _firebaseStorage = FirebaseStorage.instance;
+      var snapshot = await _firebaseStorage.ref()
+        .child('posts/${user.uid}/$fileName$curTime.$fileExt')
+        .putFile(widget.file);
+      var downloadUrl = await snapshot.ref.getDownloadURL();
+      FirebaseFirestore.instance.collection("posts")
+        .doc(user.uid).collection("docs").doc().set({
+          "user" : user.uid,
+          "photoLink" : downloadUrl,
+          "comment" : commentController.text,
+          "likes" : jsonEncode([]).toString()
+        });
+    }
   }
 
   @override
@@ -70,7 +89,9 @@ class _PostState extends State<Post> {
             IconButton(
               icon: Icon(Icons.send),
               onPressed: (){
-                upload();
+                if(commentKey.currentState.validate()){
+                  upload();
+                }
               },
             )
           ],
@@ -89,7 +110,16 @@ class _PostState extends State<Post> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // FileImage(widget.file)
+                Padding(
+                  padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: 300.0,
+                    child: Image.file(
+                      File(widget.file.path)
+                    ),
+                  )
+                ),
                 SizedBox(
                   height: 20.0,
                 ),
