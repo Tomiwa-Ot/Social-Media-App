@@ -159,7 +159,6 @@ class _ProfileState extends State<Profile> {
         child: StreamBuilder<DocumentSnapshot>(
           stream: stream,
           builder: (context, snapshot) {
-            
             if(snapshot.hasData){
               nameController.text = snapshot.data['Fullname'];
               if(jsonDecode(snapshot.data['Followers']).length != 0){

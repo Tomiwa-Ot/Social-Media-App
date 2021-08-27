@@ -45,7 +45,7 @@ class _SearchState extends State<Search> {
   }
 
   setSearchParam(String value){
-    List<String> cases = List();
+    List cases = List();
     String temp = "";
     for(int i = 0; i < value.length; i++){
       temp = temp + value[i];
@@ -55,10 +55,10 @@ class _SearchState extends State<Search> {
     return cases;
   }
 
-  Future search(List cases) async {
+  Future search(String value) async {
     if(user != null){
       FirebaseFirestore.instance.collection("users")
-      .where("Fullname", arrayContains: cases).get().then((value) {
+      .where("Fullname",  isGreaterThanOrEqualTo: value).get().then((value) {
         if(value.docs.isNotEmpty){
           setState(() {
             print("not empty");
@@ -105,7 +105,7 @@ class _SearchState extends State<Search> {
                 height: 10.0,
               ),
               ListTile(
-                leading: searchResult.docs[index].data()['Photo'].isEmpty ? CircleAvatar(
+                leading: searchResult.docs[index].data()['Photo'] == null ? CircleAvatar(
                   radius: 25.0,
                   child: Text(searchResult.docs[index].data()['Fullname'].toString().split(" ")[1][0],
                     style: TextStyle(
@@ -117,8 +117,8 @@ class _SearchState extends State<Search> {
                   imageUrl: searchResult.docs[index].data()['Photo'],
                   imageBuilder: (context, imageProvider) {
                     return Container(
-                      width: 25.0,
-                      height: 25.0,
+                      width: 40.0,
+                      height: 40.0,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         image: DecorationImage(
@@ -204,7 +204,7 @@ class _SearchState extends State<Search> {
                 setState(() {
                   isSearching = true;
                 });
-                search(setSearchParam(value));
+                search(value);
               }else{
                 setState(() {
                   isSearching = false;
