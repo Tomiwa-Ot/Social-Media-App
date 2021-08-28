@@ -6,4 +6,5 @@
 ## Screenshots
 <p>
 <img src="screenshots/login.png" width="400"/> <img src="screenshots/register.png" width="400"/>
+<img src="screenshots/settings.png" width="400"/> <img src="screenshots/qrcode.png" width="400"/>
 </p>
