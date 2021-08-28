@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:social_media_app/pages/auth.dart';
 import 'package:social_media_app/pages/bookmark.dart';
 import 'package:social_media_app/pages/feed.dart';
@@ -119,8 +120,121 @@ class _HomePageState extends State<HomePage> {
                     stream: stream,
                     builder: (context, snapshot){
                       if(!snapshot.hasData){
-                        return Center(
-                          child: CircularProgressIndicator(),
+                        return Column(
+                          children: [
+                            ListTile(
+                              leading: Shimmer.fromColors(
+                                child: CircleAvatar(
+                                  radius: 25.0,
+                                ),
+                                baseColor: Colors.grey[100], 
+                                highlightColor: Colors.grey[300]
+                              ),
+                              title: Shimmer.fromColors(
+                                child: Container(
+                                  height: 15.0,
+                                  color: Colors.white,
+                                ),
+                                baseColor: Colors.grey[100],
+                                highlightColor: Colors.grey[300],
+                              ),
+                              subtitle: Shimmer.fromColors(
+                                child: Container(
+                                  height: 15.0,
+                                  color: Colors.white,
+                                ),
+                                baseColor: Colors.grey[100],
+                                highlightColor: Colors.grey[300],
+                              ),
+                            ),
+                            SizedBox(
+                            height: 20.0,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(5.0, 0.0, 0.0, 0.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Flexible(
+                                  child: GestureDetector(
+                                    onTap: (){
+                                      Navigator.push(context, MaterialPageRoute(
+                                        builder: (context) => StreamUsers(
+                                          title: "Following", 
+                                          uid: user.uid, 
+                                        )
+                                      ));
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Flexible(
+                                          child: Shimmer.fromColors(
+                                            child: Container(
+                                              height: 15.0,
+                                              width: 10.0,
+                                              color: Colors.white,
+                                            ),
+                                            baseColor: Colors.grey[100],
+                                            highlightColor: Colors.grey[300],
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 10.0,
+                                        ),
+                                        Flexible(
+                                          child: Text("Following",
+                                            style: TextStyle(
+                                              color: Colors.grey,
+                                              fontWeight: FontWeight.w400
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                ),
+                                Flexible(
+                                  child: GestureDetector(
+                                    onTap: (){
+                                      Navigator.push(context, MaterialPageRoute(
+                                        builder: (context) => StreamUsers(
+                                          title: "Followers", 
+                                          uid: user.uid, 
+                                        )
+                                      ));
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Flexible(
+                                          child: Shimmer.fromColors(
+                                            child: Container(
+                                              height: 15.0,
+                                              width: 10.0,
+                                              color: Colors.white,
+                                            ),
+                                            baseColor: Colors.grey[100],
+                                            highlightColor: Colors.grey[300],
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 10.0,
+                                        ),
+                                        Flexible(
+                                          child: Text("Followers",
+                                            style: TextStyle(
+                                              color: Colors.grey,
+                                              fontWeight: FontWeight.w400
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                )
+                              ],
+                            )
+                          )
+                          ],
                         );
                       }
                       if(snapshot.hasData){
@@ -317,7 +431,7 @@ class _HomePageState extends State<HomePage> {
                       icon: Icon(CupertinoIcons.qrcode, color: Color.fromRGBO(75, 0, 130, 1)),
                       onPressed: (){
                         Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => QrCode()
+                          builder: (context) => QrCode(uid: user.uid,)
                         ));
                       },
                     ),

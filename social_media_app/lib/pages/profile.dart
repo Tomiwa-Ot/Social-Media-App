@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:social_media_app/pages/streamusers.dart';
 
 class Profile extends StatefulWidget {
@@ -175,8 +176,91 @@ class _ProfileState extends State<Profile> {
               }
             }
             if(!snapshot.hasData){
-              return Center(
-                child: CircularProgressIndicator(),
+              return Container(
+                color: Colors.white,
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: Shimmer.fromColors(
+                        child: CircleAvatar(
+                          radius: 40.0,
+                        ),
+                        baseColor: Colors.grey[100], 
+                        highlightColor: Colors.grey[300]
+                      ),
+                      title: Shimmer.fromColors(
+                        child: Container(
+                          height: 15.0,
+                          color: Colors.white,
+                        ),
+                        baseColor: Colors.grey[100],
+                        highlightColor: Colors.grey[300],
+                      ),
+                      subtitle: Shimmer.fromColors(
+                        child: Container(
+                          height: 15.0,
+                          color: Colors.white,
+                        ),
+                        baseColor: Colors.grey[100],
+                        highlightColor: Colors.grey[300],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 40.0
+                    ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+                      child: Divider(
+                        color: Color.fromRGBO(230, 230, 230, 1),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Column(
+                          children: [
+                            Shimmer.fromColors(
+                              child: Container(
+                                height: 15.0,
+                                width: 60.0,
+                                color: Colors.white,
+                              ),
+                              baseColor: Colors.grey[100],
+                              highlightColor: Colors.grey[300],
+                            ),
+                            SizedBox(
+                              height: 5.0,
+                            ),
+                            Text("FOLLOWING")
+                          ],
+                        ),
+                        VerticalDivider(
+                          
+                        ),
+                         Column(
+                          children: [
+                            Shimmer.fromColors(
+                              child: Container(
+                                height: 15.0,
+                                width: 60.0,
+                                color: Colors.white,
+                              ),
+                              baseColor: Colors.grey[100],
+                              highlightColor: Colors.grey[300],
+                            ),
+                            SizedBox(
+                              height: 5.0,
+                            ),
+                            Text("FOLLOWERS")
+                          ],
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 15.0
+                    ),
+                  ],
+                ),
               );
             }
             return Container(
@@ -209,7 +293,13 @@ class _ProfileState extends State<Profile> {
                               ),
                             );
                           },
-                          placeholder: (context, url) => CircularProgressIndicator(),
+                          placeholder: (context, url) => Shimmer.fromColors(
+                            child: CircleAvatar(
+                              radius: 25.0,
+                            ),
+                            baseColor: Colors.grey[100], 
+                            highlightColor: Colors.grey[300]
+                          ),
                           errorWidget: (context, url, error) => Icon(Icons.error, color: Colors.red,),
                         ),
                         Padding(
