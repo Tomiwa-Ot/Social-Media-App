@@ -4,6 +4,7 @@ import 'package:social_media_app/pages/home.dart';
 import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:social_media_app/pages/profile.dart';
 
 void main() {
   runApp(StartPage());
@@ -45,7 +46,10 @@ class _StartPageState extends State<StartPage> {
   Widget build(BuildContext context) {
     return OverlaySupport(
       child: MaterialApp(
-        debugShowCheckedModeBanner: false,
+        initialRoute: '/',
+        routes: {
+          '/profile': (context) => Profile(),
+        },
         title: 'Social Media App',
         theme: ThemeData(
           primarySwatch: Colors.deepPurple,

@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:social_media_app/pages/profile.dart';
 
 class QrCode extends StatefulWidget {
   
@@ -69,7 +70,11 @@ class _QrCodeState extends State<QrCode> {
                 onPressed: () async { 
                   try{
                     await BarcodeScanner.scan();
-                    // String codeScanner = await BarcodeScanner.scan();
+                    String codeScanner = await BarcodeScanner.scan();
+                    // check if code exists in db
+                    Navigator.popAndPushNamed(context, "/profile", arguments: {
+                      "uId" : codeScanner
+                    });
                     
                   } on PlatformException catch(e){
                     // String codeScanner = await BarcodeScanner.scan();
