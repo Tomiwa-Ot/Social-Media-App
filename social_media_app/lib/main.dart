@@ -45,6 +45,7 @@ class _StartPageState extends State<StartPage> {
   Widget build(BuildContext context) {
     return OverlaySupport(
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Social Media App',
         theme: ThemeData(
           primarySwatch: Colors.deepPurple,
