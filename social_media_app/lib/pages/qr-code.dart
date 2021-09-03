@@ -1,9 +1,10 @@
 import 'package:barcode_scan_fix/barcode_scan.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:social_media_app/pages/profile.dart';
 
 class QrCode extends StatefulWidget {
   
@@ -71,11 +72,27 @@ class _QrCodeState extends State<QrCode> {
                   try{
                     await BarcodeScanner.scan();
                     String codeScanner = await BarcodeScanner.scan();
-                    // check if code exists in db
-                    Navigator.popAndPushNamed(context, "/profile", arguments: {
-                      "uId" : codeScanner
-                    });
-                    
+                    DocumentSnapshot ds = await FirebaseFirestore.instance.collection("users").doc(codeScanner).get();
+                    if(ds.exists){
+                      Navigator.popAndPushNamed(context, "/profile", arguments: {
+                        "uId" : codeScanner
+                      });
+                    }else{
+                      showSimpleNotification(
+                        Text("Error",
+                          style: TextStyle(
+                            color: Color.fromRGBO(255,40,147, 1),
+                          )
+                        ),
+                        background: Color.fromRGBO(75, 0, 130, 1),
+                        duration: Duration(seconds: 2),
+                        subtitle: Text("Invalid Qr Code",
+                          style: TextStyle(
+                            color: Color.fromRGBO(255,40,147, 1),
+                          ),
+                        )
+                      );
+                    }
                   } on PlatformException catch(e){
                     // String codeScanner = await BarcodeScanner.scan();
                     print(e);

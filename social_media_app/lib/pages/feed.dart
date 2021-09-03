@@ -24,7 +24,7 @@ class _FeedState extends State<Feed> {
     });
   }
 
-  Future refresh(){
+  refresh(){
     
   }
 
