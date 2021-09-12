@@ -73,7 +73,8 @@ class _RegisterState extends State<Register> {
           "Bio" : "",
           "Photo" : "",
           "Following" : [].toString(),
-          "Followers" : [].toString()
+          "Followers" : [].toString(),
+          "NoPosts" : 0
         });
       }
       loginPersistence();

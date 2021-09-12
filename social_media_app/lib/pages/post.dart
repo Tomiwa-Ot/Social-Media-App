@@ -45,13 +45,19 @@ class _PostState extends State<Post> {
         .child('posts/${user.uid}/$fileName$curTime.$fileExt')
         .putFile(widget.file);
       var downloadUrl = await snapshot.ref.getDownloadURL();
-      FirebaseFirestore.instance.collection("posts")
+      FirebaseFirestore.instance.collection("users").doc(user.uid).collection("posts")
         .doc().set({
           "user" : user.uid,
           "photoLink" : downloadUrl,
           "comment" : commentController.text,
-          "likes" : jsonEncode([]).toString()
+          "likes" : jsonEncode([]).toString(),
+          "timestamp" : DateTime.now().toIso8601String(),
         }).then((value) {
+          var doc = FirebaseFirestore.instance.collection("users").doc(user.uid).snapshots();
+          // int val = doc.toList()
+          // FirebaseFirestore.instance.collection("users").doc(user.uid).update({
+          //   "NoPosts" : val++
+          // });
           setState(() {
             uploading = false;
           });
