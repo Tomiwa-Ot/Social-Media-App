@@ -54,6 +54,7 @@ class _PostState extends State<Post> {
           "timestamp" : DateTime.now().toIso8601String(),
         }).then((value) {
           var doc = FirebaseFirestore.instance.collection("users").doc(user.uid).snapshots();
+          // doc.
           // int val = doc.toList()
           // FirebaseFirestore.instance.collection("users").doc(user.uid).update({
           //   "NoPosts" : val++
