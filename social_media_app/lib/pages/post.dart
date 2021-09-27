@@ -45,6 +45,7 @@ class _PostState extends State<Post> {
         .child('posts/${user.uid}/$fileName$curTime.$fileExt')
         .putFile(widget.file);
       var downloadUrl = await snapshot.ref.getDownloadURL();
+      int val = 0;
       FirebaseFirestore.instance.collection("users").doc(user.uid).collection("posts")
         .doc().set({
           "user" : user.uid,
@@ -53,12 +54,12 @@ class _PostState extends State<Post> {
           "likes" : jsonEncode([]).toString(),
           "timestamp" : DateTime.now().toIso8601String(),
         }).then((value) {
-          var doc = FirebaseFirestore.instance.collection("users").doc(user.uid).snapshots();
-          // doc.
-          // int val = doc.toList()
-          // FirebaseFirestore.instance.collection("users").doc(user.uid).update({
-          //   "NoPosts" : val++
-          // });
+          FirebaseFirestore.instance.collection("users").doc(user.uid).get().then((value) {
+            val = value.data()['NoPosts'];
+          });
+          FirebaseFirestore.instance.collection("users").doc(user.uid).update({
+            "NoPosts" : val++
+          });
           setState(() {
             uploading = false;
           });
