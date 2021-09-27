@@ -329,7 +329,7 @@ class _ProfileState extends State<Profile> {
                                   ),
                                   errorWidget: (context, url, error) => Icon(Icons.error, color: Colors.red,),
                                 ),
-                                Padding(
+                                user.uid == widget.uId ? Padding(
                                   padding: EdgeInsets.fromLTRB(30.0, 35.0, 0.0, 0.0),
                                   child: IconButton(
                                     icon: Icon(CupertinoIcons.camera, color: Color.fromRGBO(180, 180, 180, 1),),
@@ -376,13 +376,13 @@ class _ProfileState extends State<Profile> {
                                       );
                                     },
                                   ),
-                                )
+                                ) : Container()
                               ],
                             ),
                             title: Text(snapshot.data["Fullname"]),
                             subtitle: Text(snapshot.data["Email"]),
                             trailing: IconButton(
-                              icon: Icon(Icons.edit, color: Color.fromRGBO(75, 0, 130, 1)),
+                              icon: widget.uId == user.uid ? Icon(Icons.edit, color: Color.fromRGBO(75, 0, 130, 1)) : Container(),
                               onPressed: () {
                                 bool uploading = false;
                                 showDialog(

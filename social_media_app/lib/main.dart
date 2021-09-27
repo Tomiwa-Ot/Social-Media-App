@@ -46,6 +46,7 @@ class _StartPageState extends State<StartPage> {
   Widget build(BuildContext context) {
     return OverlaySupport(
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         initialRoute: '/',
         routes: {
           '/profile': (context) => Profile(),
