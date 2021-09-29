@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -70,17 +70,37 @@ class _StreamUsersState extends State<StreamUsers> {
                 ),
               );
             }
+            // List userNames, profilePhoto = [];
+            // for (var i = 0; i < jsonDecode(snapshot.data[widget.title]).length - 1; i++) {
+            //   if(user.uid != null){
+            //     FirebaseFirestore.instance.collection("users")
+            //     .doc(jsonDecode(snapshot.data[widget.title])[i]).get().then((value) {
+            //       userNames.add(value.data()[1]);
+            //       print(value.data()['Fullname']);
+            //       value.data()['Photo'].isEmpty() ? profilePhoto.add("N/A") : profilePhoto.add(value.data()['Photo']);
+            //     });
+            //   }
+            // }
             return ListView.builder(
               itemCount: jsonDecode(snapshot.data[widget.title]).length,
               itemBuilder: (context, index) {
                 return Column(
                   children: [
-                    ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Color.fromRGBO(75, 0, 130, 1),
-                        radius: 40.0,
+                    GestureDetector(
+                      onTap: (){
+                        Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => Profile(
+                              uId: jsonDecode(snapshot.data[widget.title])[index]
+                            )
+                        ));
+                      },
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: Color.fromRGBO(75, 0, 130, 1),
+                          radius: 40.0,
+                        ),
+                        title: Text(jsonDecode(snapshot.data[widget.title])[index]),
                       ),
-                      title: Text(jsonDecode(snapshot.data[widget.title])[index]),
                     ),
                     SizedBox(height: 5.0),
                     Divider()
